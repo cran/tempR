@@ -1,0 +1,994 @@
+#' Convenience function for curve smoothing
+#'
+#' Smooth TCATA curves, constraining smooth within \code{low.bound} and \code{up.bound}.
+#' @name get.smooth
+#' @aliases get.smooth
+#' @usage get.smooth(y, w = NULL, spar = 0.5, low.bound = 0, up.bound = 1)
+#' @param y the vector of proportions (or counts) to be smoothed. If a data frame is provided then smoothing is conducted on each row.
+#' @param w an optional vector of weights; see \code{\link[stats]{smooth.spline}}
+#' @param spar smoothing parameter; see \code{\link[stats]{smooth.spline}}
+#' @param low.bound lower bound for smoothed proportions
+#' @param up.bound upper bound for smoothed proportions
+#' @return out smoothed vector (or data frame with smoothed rows)
+#' @export
+#' @encoding UTF-8
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @seealso \code{\link[stats]{smooth.spline}}, \code{\link[stats]{predict}}
+#' @examples
+#' # example using 'syrah' data set
+#' low1 <- t(syrah[seq(3, 1026, by = 6), -c(1:4)])
+#' colnames(low1) <- 10:180
+#' x <- get.smooth(low1)
+#' round(x, 3)
+get.smooth <- function(y, w = NULL, spar = 0.5, low.bound = 0, up.bound = 1) {
+  if(is.vector(y)){
+    it <- 1
+    out <- matrix(y, nrow=1)
+  } else {
+    it <- nrow(y)
+    out <- y
+  }
+  for (i in 1:it){
+    incl <- !is.na(out[i, ])
+    requireNamespace("stats", quietly = TRUE)
+    this.smooth <- stats::smooth.spline(x = seq_along(out[i, ])[incl], y = out[i, ][incl],
+                                 w = w, spar = spar)
+    out[i, ] <- stats::predict(this.smooth, x = seq_along(out[i, ]))$y
+    out[i, ][out[i, ] < low.bound] <- low.bound
+    out[i, ][out[i, ] > up.bound] <- up.bound
+  }
+  if (it == 1) out <- c(out)
+  return(out)
+}
+
+#' Fills gaps
+#'
+#' Replace gaps in TDS and TCATA data with replacement responses.
+#' @name fill.gaps
+#' @aliases fill.gaps
+#' @usage fill.gaps(y, subst = 0, repl = 1)
+#' @param y  vector (or data frame) of Bernoulli data which may contain gaps
+#' @param subst value occurring in a gap (which represents real data outside a gap). Default is \code{0}.
+#' @param repl value occurring for a response (used to replace gap values). Default is \code{1}.
+#' @return out vector (or data frame) of Bernoulli data with filled gaps
+#' @export
+#' @encoding UTF-8
+#' @examples
+#' # vector with gaps: x with NA gaps (e.g. due to attribute cuing)
+#' (x <- rep(c(rep(NA,4), rep(1,4)), 2))
+#' fill.gaps(x, subst = NA)
+#'
+#' # array with gaps: y with an gap of 0s (e.g. due to attribute fading)
+#' (y <- structure(c(0, 1, 0,
+#'                   0, 1, 1,
+#'                   0, 1, 1,
+#'                   1, 1, 1,
+#'                   1, 1, 0,
+#'                   1, 1, 0,
+#'                   1, 1, 0,
+#'                   1, 0, 1,
+#'                   1, 0, 1,
+#'                   1, 0, 0),
+#'                 .Dim = c(3L, 10L),
+#'                 .Dimnames = list(1:3, 1:10)))
+#' fill.gaps(y)
+fill.gaps <- function(y, subst = 0, repl = 1) {
+  if (all(is.na(c(subst, repl)))) return(y)
+  if(is.vector(y)){
+    it <- 1
+    out <- matrix(y, nrow=1)
+  } else {
+    it <- nrow(y)
+    out <- y
+  }
+  i.repl.first <- i.repl.last <- i.subst <- NA
+  for (i in 1:it){
+    if (is.na(subst)){
+      i.subst <- which(is.na(out[i, ]))
+      ind <- which(out[i, ] == repl)
+      if (length(i.subst) > 0 & length(ind) > 0){
+        i.repl.first <- min(ind)
+        i.repl.last <- max(ind)
+        i.subst <- i.subst[i.subst > i.repl.first & i.subst < i.repl.last]
+        out[i,][i.subst] <- repl
+      }
+    } else if (is.na(repl)){
+      i.subst <- which(out[i, ] == subst)
+      ind <- which(is.na(out[i, ]))
+      if (length(i.subst) > 0 & length(ind) > 0){
+        i.repl.first <- min(ind)
+        i.repl.last <- max(ind)
+        i.subst <- i.subst[i.subst > i.repl.first & i.subst < i.repl.last]
+        out[i,][i.subst] <- repl
+      }
+    }  else if (!(is.na(subst) | is.na(subst))){
+      if(repl != subst){
+        if(any(out[i, ] == repl) & any(out[i, ] == subst)){
+          i.repl.first <- min(which(out[i, ] == repl))
+          i.repl.last <- max(which(out[i, ] == repl))
+          i.subst <- which(out[i, ] == subst)
+          i.subst <- i.subst[i.subst > i.repl.first & i.subst < i.repl.last]
+          out[i,][i.subst] <- repl
+        }
+      }
+    } else {
+      return(warning(print("Could not fill gaps")))
+    }
+  }
+  if (it == 1) out <- c(out)
+  return(out)
+}
+
+#' Adjust color brightness
+#'
+#' Select suitable colors for highlighting plots.
+#' @name adjust.brightness
+#' @aliases adjust.brightness
+#' @usage adjust.brightness(rgb.in, percent = 10)
+#' @param rgb.in  \code{rgb} of input color
+#' @param percent the degree to which input color will be modified/brightened
+#' @return hex hex code for new color
+#' @export
+#' @encoding UTF-8
+#' @examples
+#' (rgb.in <- c(col2rgb("red")))
+#' adjust.brightness(rgb.in, percent = 10)
+adjust.brightness <- function(rgb.in, percent = 10) {
+  requireNamespace("grDevices", quietly = TRUE)
+  col.max <- 253
+  col.min <- 0
+  new.red <- floor(rgb.in[1] + (100 + percent) / 100)
+  new.green <- round(rgb.in[2] + (100 + percent) / 100)
+  new.blue <- round(rgb.in[3] + (100 + percent) / 100)
+  new.max <- max(new.red, new.green, new.blue)
+  new.min <- min(new.red, new.green, new.blue)
+  if(new.max >= col.max) {
+    # find the ones that are too bright
+    col.over <- 1 * (c(new.red, new.green, new.blue) - rep(col.max, times = 3) > 0)
+    col.redist <- sum(col.over * (c(new.red, new.green, new.blue) - c(col.max, col.max, col.max)))
+    if(col.over[1]){
+      new.red <- col.max
+    } else {
+      new.red <- min(col.max, round(new.red + col.redist / sum(col.over)))
+    }
+    if(col.over[2]){
+      new.green <- col.max
+    } else {
+      new.green <- min(col.max, round(new.green + col.redist / sum(col.over)))
+    }
+    if(col.over[3]){
+      new.blue <- col.max
+    } else {
+      new.blue <- min(col.max, round(new.blue + col.redist / sum(col.over)))
+    }
+  }
+  if(new.min <= col.min) {
+    # one or more colours is too dark
+    col.under <- 1 * (c(new.red, new.green, new.blue) - c(col.min, col.min, col.min) < 0)
+    col.redist <- sum(col.under * (rep(col.min, times = 3) - c(new.red, new.green, new.blue)))
+    if(col.under[1]){
+      new.red <- col.min
+    } else {
+      new.red <- max(col.min, round(new.red + col.redist / sum(col.under)))
+    }
+    if(col.under[2]){
+      new.green <- col.min
+    } else {
+      new.green <- max(col.min, round(new.green + col.redist / sum(col.under)))
+    }
+    if(col.under[3]){
+      new.blue <- col.min
+    } else {
+      new.blue <- max(col.min, round(new.blue + col.redist / sum(col.under)))
+    }
+  }
+  return(hex = grDevices::rgb(new.red, new.green, new.blue, max = 255))
+}
+
+#' Temporal Check-All-That-Apply (TCATA) curve
+#'
+#' Plots TCATA curves based on count or proportion data. Can also be used for plotting Temporal Dominance of Sensations (TDS) curves based on dominance counts or proportions.
+#' @name tcata.line.plot
+#' @aliases tcata.line.plot
+#' @usage tcata.line.plot(X, n = 1, attributes = c(), times = c(), lwd = 1,
+#' emphasis = NA, emphasis.lty = 1, emphasis.lwd = 3, declutter = NA,
+#' chance.lty = 3, reference = NA, ref.lty = 2, ref.lwd = 1,
+#' highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
+#' height = 8, width = 12, main = "",
+#' xlab = "Time", ylab = "Citation proportion", xlim = c(),
+#' line.col = c(), x.increment = 5, legend.cex = 1, legend.pos = "topleft",
+#' save.format = "", save.as = "" )
+#' @param X matrix of proportions (or, if there is no missing data, on counts), typically with Attributes in rows and times in columns.
+#' @param n The number of observations if \code{X} is a count matrix. Keep \code{n = 1} if \code{X} is a matrix of proportions.
+#' @param attributes a vector of attribute labels, corresponding to the attributes in \code{X}.
+#' @param times a vector of time, corresponding to the times in \code{X}.
+#' @param lwd Line width used when plotting attribute curves in \code{X}.
+#' @param emphasis a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring emphasis, and \code{NA} for points without emphasis.
+#' @param emphasis.lty Controls the line type associated with the emphasis line.
+#' @param emphasis.lwd Controls the line weight associated with the emphasis line.
+#' @param declutter a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points that will not be plotted.
+#' @param chance.lty line type for the chance line. (May be deprecated?)
+#' @param reference a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points where a reference line will be displayed, and \code{NA} for points where no reference line will be shown.
+#' @param ref.lty \code{reference} line type.
+#' @param ref.lwd \code{reference} line width.
+#' @param highlight a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring highlighting, and \code{NA} for points without highlighting
+#' @param highlight.lty Controls the line type associated with the highlighting.
+#' @param highlight.lwd Controls the line weight associated with the highlighting line.
+#' @param highlight.col a vector of colours for attributes corresponding to rows of \code{X}.
+#' @param height Window height.
+#' @param width Window width.
+#' @param main plot title; see \code{\link[graphics]{plot}}.
+#' @param xlab Label for the x axis.
+#' @param ylab Label for the y axis.
+#' @param xlim Permits control of the x limit. Limits can be specified using a vector of 2 (ascending) numbers.
+#' @param line.col A vector of colors for lines corresponding to rows of \code{X}.
+#' @param x.increment Specifies the interval between times when labelling the x axis.
+#' @param legend.cex Used to identify the size of markers shown in the legend..
+#' @param legend.pos Indicates the location of the legend in the plot. Defaults to \code{"topleft"}.
+#' @param save.format If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).
+#' @param save.as Filename if the file will be saved.
+#' @export
+#' @encoding UTF-8
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @examples
+#' # example using 'syrah' data set
+#' low1 <- t(syrah[seq(3, 1026, by = 6), -c(1:4)])
+#' colnames(low1) <- 10:180
+#' tcata.line.plot(get.smooth(low1), lwd = 2, main = "Low-ethanol wine (Sip 1)")
+tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
+                            emphasis = NA, emphasis.lty = 1, emphasis.lwd = 3,
+                            declutter = NA, chance.lty = 3,
+                            reference = NA, ref.lty = 2, ref.lwd = 1,
+                            highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
+                            height = 8, width = 12, main = "",
+                            xlab = "Time", ylab = "Citation proportion", xlim = c(),
+                            line.col = c(), x.increment = 5, legend.cex = 1, legend.pos = "topleft",
+                            save.format = "eps", save.as = "" ){
+  # mat will contain proportions
+  requireNamespace("grDevices", quietly = TRUE)
+  requireNamespace("graphics", quietly = TRUE)
+  if (length(attributes) == 0 ) attributes <- rownames(X)
+  if (length(times) == 0 ) times <- as.numeric(colnames(X))
+  if (length(line.col) == 0 ) {
+    line.col <- pretty_palette(length(attributes))
+  }
+  if (length(highlight.col) == 0 ) {
+    highlight.col <- pretty_palette(length(attributes))
+  }
+
+  X <- X/n
+  grDevices::dev.new(height = height, width = width)
+  start.time <- min(times)
+  end.time <- max(times)
+  if(length(xlim) == 0){
+    xlim.given <- FALSE
+    xlim <- c(start.time, end.time)
+    xlim.at <- seq(from = start.time, to = end.time, by = x.increment)
+  } else {
+    xlim.given <- TRUE
+    xlim.at <- seq(from = start.time, to = end.time, by = x.increment)
+    if(xlim.at[1] != xlim[1]) xlim.at <- c(xlim[1], xlim.at)
+    if(xlim.at[length(xlim.at)] != xlim[2]) xlim.at <- c(xlim.at, xlim[2])
+  }
+
+  for(gg in 1:length(save.format)){
+    if(save.format[gg] == "eps" & save.as[gg] != "") {
+      grDevices::postscript(save.as[gg])
+    }
+
+    graphics::plot(x = c(start.time, end.time), y = c(0,1), xlim = xlim, ylim = c(0,1),
+         xlab = xlab, ylab = ylab, type = "n", axes = F, main = main)
+    graphics::axis(1, at = xlim.at)
+    graphics::axis(2)
+
+    if (!any(is.na(reference))) {
+      if (is.na(nrow(reference))) {
+        # overall chance line
+        graphics::lines(x = times, y = reference, xlim = c(start.time, end.time), col = grDevices::grey(1/3), lwd = 1, lty = chance.lty)
+      } else {
+        # reference lines
+        if (nrow(reference) == length(attributes)){
+          for (a in seq_along(attributes)){
+            declutter.a <- rep(1, length = length(reference[a, ]))
+            if(length(1*is.na(declutter)) != 1){
+              declutter.a <- declutter[a, ]
+            }
+            graphics::lines(x = times, y = reference[a, ]*declutter.a, xlim = c(start.time, end.time), col = line.col[a], lwd = ref.lwd, lty = ref.lty)
+            if(highlight){
+              graphics::lines(x = times, y = X[a, ]*declutter.a, xlim = c(start.time, end.time), col = highlight.col[a], lwd = highlight.lwd, lty = highlight.lty)
+            }
+          }
+        }
+      }
+    }
+
+    if(!any(is.na(emphasis))){
+      if (!is.na(nrow(emphasis))) {
+        if (nrow(emphasis) == length(attributes)){
+          for (a in seq_along(attributes)){
+            emphasis[a,][emphasis[a,] == 0] <- NA
+            graphics::lines(x = times, y = X[a,]*emphasis[a,], xlim = c(start.time, end.time), col = line.col[a], lwd = emphasis.lwd, lty = emphasis.lty)
+          }
+        }
+      }
+    }
+
+    for (a in seq_along(attributes)){
+      graphics::lines(x = times, y = X[a,], xlim = c(start.time, end.time), col = line.col[a], lwd = lwd)
+    }
+    graphics::legend(legend.pos, legend = attributes, bty = "n", ncol = 2, text.col = line.col, text.font = 3, cex = legend.cex)
+
+    if(save.format[gg] == "png" & save.as[gg] != "") grDevices::savePlot(save.as[gg], type = "png")
+    if(save.format[gg] == "eps" & save.as[gg] != "") grDevices::dev.off()
+  }
+}
+
+#' Pairwise comparisons
+#'
+#' p-value for pairwise comparisons.
+#' @name get.mat.diff.sign
+#' @aliases get.mat.diff.sign
+#' @param x citations for product x
+#' @param y citations for product y
+#' @param n.x total observations for x
+#' @param n.y total observations for y
+#' @param test.type So far only Fisher's exact test is implemented (\code{"f"})
+#' @seealso \code{\link[stats]{fisher.test}}
+#' @aliases get.mat.diff.sign
+#' @export
+#' @encoding UTF-8
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @examples
+#' # Toy TCATA citations data for two samples: s1, s2
+#' s1 <- rbind(sweet =  c(10, 23, 25, 26, 26, 43, 44),
+#'             bitter = c( 4, 18, 19, 27, 36, 43, 54),
+#'             sour =   c(40, 53, 85, 70, 46, 33, 24))
+#' s2 <- rbind(sweet =  c(11, 33, 45, 46, 56, 43, 44),
+#'             bitter = c( 0, 11, 11, 14, 25, 35, 34),
+#'             sour =   c(30, 33, 35, 20, 26, 23, 24))
+#' colnames(s1) <- colnames(s2) <- paste0("time_", seq(5, 35, by = 5), "s")
+#' n <- 90
+#' signif <- get.mat.diff.sign(s1, s2, n, n)
+#' signif
+get.mat.diff.sign <- function(x, y, n.x = NA, n.y = NA, test.type = "f"){
+  requireNamespace("stats", quietly = TRUE)
+  out.mat <- x * 0
+  for(r in 1:nrow(x)){
+    for(c in 1:ncol(x)){
+      if(is.na(n.x)) n.x <- sum(x[r, c], x[r, c], na.rm = TRUE)
+      if(is.na(n.y)) n.y <- sum(y[r, c], y[r, c], na.rm = TRUE)
+      if (test.type == "f"){
+        fet2x2 <- rbind(c(x[r, c], n.x - x[r, c]), c(y[r, c], n.y - y[r, c]))
+        out.mat[r, c] <- stats::fisher.test(fet2x2)$p.value
+      }
+    }
+  }
+  return(out.mat)
+}
+
+#' TCATA difference plot
+#'
+#' Plots TCATA difference curves.
+#' @name tcata.diff.plot
+#' @aliases tcata.diff.plot
+#' @usage tcata.diff.plot(x1 = x1, x2 = NA, n1 = 1, n2 = NA,
+#' attributes = c(), times = c(), lwd = 1,
+#' declutter = NA, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
+#' main = "", height = 8, width = 12,
+#' xlab = "Time", ylab = "Difference in citation proportion",
+#' line.col = c(), x.increment = 5, legend.cex = 1, save.as = "")
+#' @param x1 matrix of difference proportions, or of counts if \code{n1} specified. If \code{mat2} specified then proportions or counts apply to first sample. Attributes are in rows, times in columns.
+#' @param x2 matrix of proportions for second sample, or of counts if \code{n2} specified.
+#' @param n1 number of observations for first sample
+#' @param n2 number of observations for second sample
+#' @param attributes vector of attribute labels for row in \code{x1} (and \code{x2})
+#' @param times vector of times for columns in \code{x1} (and \code{x2})
+#' @param lwd Line width
+#' @param declutter indicator matrix with same dimensions of \code{x1} to suppress output
+#' @param emphasis set to \code{1} to emphasize significant differences
+#' @param alpha significance level to use for entrywise test of \code{x1} and \code{x2} (if counts)
+#' @param emphasis.lwd line weight for emphasizing significant differences
+#' @param main plot title; see \code{\link[graphics]{plot}}
+#' @param height plot height
+#' @param width plot width
+#' @param xlab label for x axis
+#' @param ylab label for y axis
+#' @param line.col line color for attribute lines
+#' @param legend.cex symbol size for legend
+#' @param x.increment increment between time labels on x axis
+#' @param save.as Filename to use if file will be saved.
+#' @export
+#' @encoding UTF-8
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @examples
+#' # difference between High and Low ethanol wines (sip 1)
+#' x.diff.raw <- t(syrah[seq(1, 1026, by = 6), -c(1:4)]) -
+#'                 t(syrah[seq(3, 1026, by = 6), -c(1:4)])
+#' x.diff.smooth <- get.smooth(x.diff.raw, low.bound = -1, up.bound = 1)
+#' colnames(x.diff.smooth) <- colnames(x.diff.raw) <- times <- 10:180
+#' tcata.diff.plot(x.diff.smooth, attributes = rownames(x.diff.smooth), times = times, lwd = 2,
+#'                 main = "Sip 1 differences: High-ethanol wine - Low-ethanol wine")
+tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(), times = c(), lwd = 1,
+                            declutter = NA, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
+                            main = "", height = 8, width = 12,
+                            xlab = "Time", ylab = "Difference in citation proportion",
+                            line.col = c(),
+                            x.increment = 5, legend.cex = 1,
+                            save.as = ""){
+  requireNamespace("grDevices", quietly = TRUE)
+  requireNamespace("graphics", quietly = TRUE)
+  # expect x1 and x2 to be contigency tables with the same dimension, rownames, colnames
+  if (sum(1*(dim(x1) != dim(x2))) + sum(1*(colnames(x1) != colnames(x2))) != 0){
+    print("Mismatch in matrix dimension or matrix attributes (colnames).")
+    return(NULL)
+  }
+  if (length(times) == 0) times <- as.numeric(colnames(x1))
+  if (length(attributes) == 0) attributes <- rownames(x1)
+  if (length(line.col) == 0) {
+    requireNamespace("grDevices", quietly = TRUE)
+    line.col <- pretty_palette(length(attributes))
+  }
+
+  if (!all(is.na(x2))){
+    # two matrices are provided - get the differences
+    mat.diff <- (x1 - x2) / sum(n1, n2, na.rm = TRUE)
+    mat.diff.sign <- get.mat.diff.sign(x1, x2, n1, n2)  # this could be updated to correspond with "emphasis" that can be passed in
+  } else {
+    # only one matrix of differences
+    mat.diff <- x1 / n1
+  }
+
+  grDevices::dev.new(height = height, width = width)
+  start.time <- min(times)
+  end.time <- max(times)
+
+  if(save.as != "") {
+    grDevices::postscript(save.as)
+  }
+
+  graphics::plot(x = c(start.time, end.time), y = c(-1, 1), axes = F, xlab = xlab, ylab = ylab, type = "n", main = main)
+  graphics::axis(1, at = seq(from = min(as.numeric(colnames(x1))), to = max(as.numeric(colnames(x1))), by = x.increment))
+  graphics::axis(2)
+  graphics::abline(h = 0, col = "grey33", lty = 3)
+  for (a in seq_along(attributes)){
+    graphics::lines(x = times, y = mat.diff[a,], lwd = lwd, col = line.col[a])
+  }
+  if(!any(is.na(emphasis))){
+    if (!is.na(nrow(emphasis))) {
+      if (nrow(emphasis) == length(attributes)){
+        # emphasize significant differences
+        mat.diff.sign.out <- mat.diff.sign
+        mat.diff.sign.out[mat.diff.sign.out > alpha] <- NA
+
+        for (a in seq_along(attributes)){
+          for (t in seq_along(colnames(mat.diff.sign.out))){
+            continue <- FALSE
+            start.x <- stop.x <- NA
+            if(!is.na(mat.diff.sign.out[a, t])){
+              if(t == 1) continue <- TRUE
+              if(continue==FALSE){
+                if(is.na(mat.diff.sign.out[a, t - 1])) continue <- TRUE
+              }
+              if(continue){
+                start.x <- t
+                findnext0 <- which(is.na(mat.diff.sign.out[a,min(start.x+1,length(colnames(mat.diff.sign.out))):length(colnames(mat.diff.sign.out))]))
+                if (sum(findnext0*1)==0) {
+                  stop.x <- length(colnames(mat.diff.sign.out)) # all significant; take the last time in the evaluation
+                } else {
+                  stop.x <- findnext0[1] - 1 + start.x # take the first time that is non-significant
+                }
+                y.start.x <- start.x
+                y.stop.x <- stop.x
+                graphics::lines(x = as.numeric(colnames(mat.diff[start.x:stop.x])), y = mat.diff[a,c(y.start.x:y.stop.x)], col = line.col[a], lwd = emphasis.lwd)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  graphics::legend("topleft", legend = attributes, text.col = line.col, bty = "n", ncol = 2, text.font = 3, cex = legend.cex)
+
+  if (save.as != "") grDevices::dev.off()
+}
+
+
+#' Convert TCATA data
+#'
+#' Converts TCATA data from a set of onset-offset times to an indicator vector (\code{0}s and \code{1}s). Also works for TDS data.
+#' @name convert.tcata
+#' @aliases convert.tcata
+#' @param X matrix with onset (start) times in first column and offset (stop) times in second column
+#' @param times time slices for output indicator vector
+#' @param decimal.places decimal places used in \code{times}; used for naming of the indices of \code{out.vec}
+#' @return out.vec indictor vector(\code{0}s and \code{1}s)
+#' @export
+#' @encoding UTF-8
+#' @examples
+#' X <- rbind(c(3.18, 6.83), c(8.46, 11.09), c(18.61, 21.80))
+#' times <- seq(0, 25, by = 0.01)
+#' Xnew <- convert.tcata(X, times)
+#' Xnew
+convert.tcata <- function(X, times, decimal.places = 2){
+  # matrix format:
+  no.error <- TRUE
+  if(ncol(X) != 2) no.error <- FALSE
+  if(nrow(X) == 0) no.error <- FALSE
+  array.base = NA
+  if(times[1] == 0) array.base = 0
+  if(times[1] == 1) array.base = 1
+  if(is.na(array.base)) no.error <- FALSE
+  if(array.base == 0){
+    adj <- 1
+  } else {
+    adj <- 0
+  }
+  times <- unique(round(times * (10^decimal.places), 0) / (10^decimal.places))
+  out.vec <- rep(0, times = length(times))
+  in.vec <- X * (10^decimal.places)
+
+  if( no.error ) {
+    for( r in 1:nrow(in.vec) ){
+      out.vec[ (in.vec[r, 1]+adj):(in.vec[r, 2]+adj) ] <- 1
+    }
+  } else {
+    print( "convert.tcata() gives an error." )
+  }
+  return( out.vec )
+}
+
+#' Convert Temporal Category data
+#'
+#' Converts Temporal Category data from a set of onset-offset times and ratings to an vector of ratings.
+#' @name convert.tcategory
+#' @aliases convert.tcategory
+#' @param X matrix with onset (start) times in first column and offset (stop) times in second column
+#' @param in.scores vector of category values corresponding to rows of \code{X}
+#' @param times time slices for output vector
+#' @param decimal.places decimal places used in \code{times}; used for naming of the indices of \code{out.vec}
+#' @return out.vec indictor vector(\code{0}s and \code{1}s)
+#' @export
+#' @encoding UTF-8
+#' @examples
+#' X <- rbind(c(3.18, 6.83), c(8.46, 11.09), c(18.61, 21.80))
+#' in.scores <- c(7, 6, 5)
+#' times <- seq(0, 25, by = 0.01)
+#' Xnew <- convert.tcategory(X, in.scores, times)
+#' Xnew
+convert.tcategory <- function(X, in.scores, times, decimal.places = 2){
+  # matrix format:
+  no.error <- TRUE
+  if(ncol(X) != 2) no.error <- FALSE
+  if(nrow(X) == 0) no.error <- FALSE
+  array.base = NA
+  if(times[1] == 0) array.base = 0
+  if(times[1] == 1) array.base = 1
+  if(is.na(array.base)) no.error <- FALSE
+  if(array.base == 0){
+    adj <- 1
+  } else {
+    adj <- 0
+  }
+  times <- unique(round(times * (10^decimal.places), 0) / (10^decimal.places))
+  out.vec <- rep(0, times = length(times))
+  in.vec <- X * (10^decimal.places)
+  if(length(in.scores) != nrow(X)) no.error <- FALSE
+
+  if( no.error ) {
+    for( r in 1:nrow(in.vec) ){
+      out.vec[ (in.vec[r, 1]+adj):(in.vec[r, 2]+adj) ] <- in.scores[r]
+    }
+  } else {
+    print( "convert.tcategory() gives an error." )
+  }
+  return( out.vec )
+}
+
+#' Get a pretty palette of colours
+#'
+#' Create a vector of n pretty colours.
+#' @name pretty_palette
+#' @aliases pretty_palette
+#' @encoding UTF-8
+#' @param n number of colours in the palette
+#' @return cv A character vector, \code{cv}, of colours that look pretty.
+#' @export
+#' @examples
+#' pretty_palette(8)
+pretty_palette <- function(n){
+  more.col = c()
+  if(n > 12) {
+    requireNamespace("grDevices", quietly = TRUE)
+    more.col = grDevices::rainbow(n - 8, start = 0, end = 0.995)
+  }
+  return(cv = c("red", "lightblue", "forestgreen", "purple", "hotpink", "chocolate4",
+      "orange", "steelblue", "grey", "green",  "khaki", "maroon",
+      more.col)[1:n])
+}
+
+#' Plot trajectories based on Temporal Check-All-That-Apply (TCATA) data
+#'
+#' Plot trajectories following PCA on multiblock TCATA proportions, or same for Temporal Dominance of Sensations (TDS) proportions.
+#' @aliases plot_pca.trajectories
+#' @usage plot_pca.trajectories(in.pca = in.pca, products.times = matrix(NA),
+#' attributes = c(), type = "smooth", span = 0.75, biplot = "distance",
+#' flip = c(FALSE, FALSE), dims = c(1, 2),
+#' att.offset.x = c(), att.offset.y = c(), inflate.factor = NA,
+#' xlab = "_auto_", ylab = "_auto_", xlim = NULL, ylim = NULL,
+#' attributes.col = "red", attributes.pch = 17,
+#' lwd = 1, traj.lab.loc = 0, traj.col = c(grDevices::grey(1/2)), traj.points = NA,
+#' traj.col.seg = NA, traj.cex = 1, traj.lab = c(), traj.lab.cex = 1,
+#' arrow.loc = NA, arrow.length = 0.1, arrow.col = NA, arrow.lwd = NA,
+#' main = "", save.format = "eps", save.as = "")
+#' @param in.pca Any \code{list} object with components \code{sdev}, \code{rotation}, and \code{x}. Most often it is a \code{prcomp} object obtained from PCA on a matrix of proportions (or, if there is no missing data, on counts) with Product*Times in rows and Attributes in columns.
+#' @param products.times a 2-column matrix, with an ascending sort order on products (column 1) and a secondary ascending sort on times (column 2), corresponding to the rows of the matrix submitted to prcomp to obtain \code{"in.pca"}.
+#' @param attributes a vector of attribute labels, corresponding to the attributes of the matrix submitted to prcomp to obtain \code{"in.pca"}.
+#' @param type Determines how trajectories are drawn. Possible values are \code{"smooth"} (default) or \code{"raw"}.
+#' @param span A tuning parameter used if smoothing trajectories using the \code{loess} function.
+#' @param biplot Controls the type of biplot displayed. Possible values are \code{"distance"} (plots trajectories based on scores, and attributes based on eigenvectors multiplied by the \code{"inflation.factor"}), or \code{"correlation"} (plots trajectories based on scores divided by the sqrt of their respective eigenvalues, and attributes based on eigenvectors multiplied by the sqrt of their respective eigenvalues).
+#' @param flip a vector of two logical values. Value indicates whether to mirror the coordinates in the x and y dimensions respectively. Default is \code{c(FALSE, FALSE)}.
+#' @param dims a vector of two integers, specifying the principal componts to display. Defaults is \code{"c(1, 2)"}, i.e. PC1 vs. PC2.
+#' @param att.offset.x A vector of numeric values corresponding to the labels in \code{"attributes"}. Used to adjust the horizontal position of attribute labels to make the plot more readable.
+#' @param att.offset.y A vector of numeric values corresponding to the labels in \code{"attributes"}. Used to adjust the vertical position of attribute labels to make the plot more readable.
+#' @param inflate.factor Scalar controlling the position of attribute labels. If \code{"NA"} (default), then this scalar is set to the largest absolute score divided by the largest absolute eigenvector based on the dimensions used. Use \code{"1"} for no inflation. Applies only when \code{biplot = "distance"}.
+#' @param xlab Label for x axis.
+#' @param ylab Label for y axis.
+#' @param xlim Permits control of the x limit. Limits can be specified using a vector of 2 (ascending) numbers. If a single number is provided then values are selected such that the limits are 20\% beyond the smallest and largest x coordinates, respectively. If unspecified then control over x axis limits is given to the plot function in R.
+#' @param ylim Permits control of the x limit using the same logic as is used for \code{"xlim"}.
+#' @param attributes.col Color used to display attribute labels (see \code{"attributes"}).
+#' @param attributes.pch Symbol for attribute coordinates.
+#' @param lwd Trajectory line width.
+#' @param traj.col A vector of colors for trajectories. If not specified then all trajectories are shown in grey.
+#' @param traj.points Specifies the position of markers along smoothed trajectories, and used to indicate the progression of time.
+#' @param traj.col.seg A vector of colors for segments along trajectories. If \code{NA} (default) then no segments along the trajectories appear in a color other than those specified by \code{"traj.col"}. This parameter applies to smoothed trajectories only.
+#' @param traj.cex Used with \code{"traj.points"} for smoothed trajectories. Controls the size of symbol displayed.
+#' @param traj.lab A vector of character labels that identify the trajectories. If unspecified, then products are identified by ascending natural numbers.
+#' @param traj.lab.loc Indicates where along the trajectory the trajectory label will be positioned. \code{"1"} indicates the start of the trajectory. The value \code{"0"} (default) is a special convention indicating the end of the trajectory.
+#' @param traj.lab.cex Text size of \code{traj.lab}.
+#' @param arrow.loc Trajectory arrows locations for direction marker(s).
+#' @param arrow.length Trajectory arrows length. See \code{length} parameter in \code{\link[graphics]{arrows}}.
+#' @param arrow.col Trajectory arrows color. See \code{col} parameter in \code{\link[graphics]{arrows}}.
+#' @param arrow.lwd Trajectory arrows line width. See \code{lwd} parameter in \code{\link[graphics]{arrows}}.
+#' @param main plot title; see \code{\link[graphics]{plot}}.
+#' @param save.format If indicated, this will be the file type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).
+#' @param save.as The filename. Must be provided if the file will be saved.s
+#' @export
+#' @seealso \code{\link[stats]{prcomp}}, \code{\link[graphics]{par}}
+#' @encoding UTF-8
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @examples
+#' # example using 'syrah' data set
+#' syrah.pca <- prcomp(syrah[1:248, -c(1:4)], scale. = FALSE)
+#' plot_pca.trajectories(syrah.pca, syrah[1:248, c(1, 4)], colnames(syrah)[-c(1:4)], type = "raw")
+plot_pca.trajectories <- function( in.pca = in.pca,
+                                   products.times = matrix(NA),
+                                   attributes = c(),
+                                   type = "smooth",
+                                   span = 0.75,
+                                   biplot = "distance",
+                                   flip = c(FALSE, FALSE),
+                                   dims = c(1, 2),
+                                   att.offset.x = c(),
+                                   att.offset.y = c(),
+                                   inflate.factor = NA,
+                                   xlab = "_auto_",
+                                   ylab = "_auto_",
+                                   xlim = NULL,
+                                   ylim = NULL,
+                                   attributes.col = "red",
+                                   attributes.pch = 17,
+                                   lwd = 1,
+                                   traj.lab.loc = 0,
+                                   traj.col = c(grDevices::grey(1/2)),
+                                   traj.points = NA,
+                                   traj.col.seg = NA,
+                                   traj.cex = 1,
+                                   traj.lab = c(),
+                                   traj.lab.cex = 1,
+                                   arrow.loc = NA,
+                                   arrow.length = 0.1,
+                                   arrow.col = NA,
+                                   arrow.lwd = NA,
+                                   main = "",
+                                   save.format = "eps",
+                                   save.as = "" ){
+  requireNamespace("grDevices", quietly = TRUE)
+  requireNamespace("graphics", quietly = TRUE)
+  # attribute loadings
+  loadings <- in.pca$rotation[,dims] * in.pca$sdev[dims]
+  if( length(attributes) > 0 ) {
+    y.names <- attributes
+  } else {
+    y.names <- paste0("var",c(1:nrow(loadings)))
+  }
+
+  # rescale for biplot
+  if(biplot == "distance"){
+    scores <- in.pca$x[, dims]  # scores (products)
+    maxscore <- max(abs(scores))
+    eigenvectors <- in.pca$rotation[, dims]
+    maxeigenvectors <- max(abs(eigenvectors))
+    if(is.na(inflate.factor)){
+      inflate.factor <- maxscore / maxeigenvectors
+    }
+    y <- eigenvectors * inflate.factor # new loadings (attributes)
+  }
+  if(biplot == "correlation"){
+    scores <- in.pca$x[, dims]  # scores (products)
+    scores[, 1] <- scores[, 1] / in.pca$sdev[dims[1]]
+    scores[, 2] <- scores[, 2] / in.pca$sdev[dims[2]]
+    y <- eigenvectors <- in.pca$rotation[,dims]
+    y[, 1] <- y[, 1] * in.pca$sdev[dims[1]]
+    y[, 2] <- y[, 2] * in.pca$sdev[dims[2]]
+  }
+
+  if(length(xlim) == 1 & is.numeric(xlim)){
+    # treat xlim as a multiplier
+    xlim <- range(c(scores[, 1], y[, 1])) * xlim
+  }
+
+  if(length(ylim) == 1 & is.numeric(ylim)){
+    # treat xlim as a multiplier
+    ylim <- range(c(scores[, 2], y[, 2])) * ylim
+  }
+
+  if(flip[1] == TRUE) {
+    y[, 1] <- y[, 1]*(-1)
+    scores[, 1] <- scores[, 1]*(-1)
+  }
+  if(flip[2] == TRUE) {
+    y[, 2] <- y[, 2]*(-1)
+    scores[, 2] <- scores[, 2]*(-1)
+  }
+
+  if(dim(products.times)[1]==1 & dim(products.times)[2]==1){
+    print("Products & Time matrix missing. Defaulting to one product over time.")
+    products.times <- cbind(1, 1:length(in.pca$x[, 1]))
+  }
+  products.labels <- unique(products.times[, 1])
+  times.labels <- unique(products.times[, 2])
+
+  if(length(att.offset.x) == 0) att.offset.x <- rep(0, nrow(in.pca$rotation))
+  if(length(att.offset.y) == 0) att.offset.y <- rep(0, nrow(in.pca$rotation))
+
+  if(length(att.offset.x) != nrow(in.pca$rotation) | length(att.offset.y) != nrow(in.pca$rotation))
+    return(print(paste( "att.offset.x and att.offset.y must equal the number of attributes (",as.character( nrow( in.pca$rotation ) ), ")" ) ))
+
+  # draw empty plot
+  var.exp <- 100 * in.pca$sdev[dims]^2 / sum(in.pca$sdev^2)
+  if (xlab == "_auto_")
+    xlab = paste0("Dimension ", dims[1], " (", format(var.exp[1], nsmall = 2,  digits = 2), "%)")
+  if (ylab == "_auto_")
+    ylab = paste0("Dimension ", dims[2], " (", format(var.exp[2], nsmall = 2,  digits = 2), "%)")
+
+  for (gg in 1:length(save.format)){
+    if(save.format[gg] == "eps" & save.as[gg] != "") {
+      grDevices::postscript(save.as[gg])
+    }
+
+    graphics::plot(c(y[, 1], scores[, 1]), c(y[, 2], scores[, 2]), type="n", xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, axes = F, main = main)
+    graphics::box()
+    graphics::abline(h = 0, v = 0, lty = 3)
+    graphics::axis(1)
+    graphics::axis(2)
+
+    # add product trajectories
+    for(p in 1:length(products.labels) ){
+      this.product.scores <- scores[ products.times[, 1] == products.labels[p], ]
+      if(type=="raw"){
+        for(this.time in 1:nrow(this.product.scores)){
+          if(this.time > 1){
+            last.time = this.time - 1
+            graphics::lines(this.product.scores[last.time:this.time, 1], this.product.scores[last.time:this.time, 2],
+                   lwd = lwd, col = ifelse(length(traj.col) == 1, traj.col[1], traj.col[p]))
+          }
+        }
+        graphics::points(x = this.product.scores[traj.points, 1],
+               y = this.product.scores[traj.points, 2],
+               pch = 20, cex = traj.cex, col = ifelse(length(traj.col) == 1, traj.col[1], traj.col[p]) ) # plot trajectories
+        if(!is.na(arrow.loc[1])){
+          # Add arrow(s)
+          if(is.na(arrow.col[1])) arrow.col <- traj.col
+          if(is.na(arrow.lwd[1])) arrow.lwd <- lwd
+          for(arr in seq_along(arrow.loc)){
+            this.arrow.xy <- this.product.scores[arrow.loc[arr], 1:2]
+            this.arrow.ang <- atan2(mean(this.product.scores[max(arrow.loc[arr], 1):min(arrow.loc[arr] + 25, length(this.product.scores)), 2]) - this.arrow.xy[2],
+                                    mean(this.product.scores[max(arrow.loc[arr], 1):min(arrow.loc[arr] + 25, length(this.product.scores)), 1]) - this.arrow.xy[1]) * 180 / pi
+            # get the 'next point' inelegantly
+            if(this.arrow.ang > 0) this.arrow.next.xy <- this.arrow.xy + c(1, 1)*arrow.length/10
+            if(this.arrow.ang > 90) this.arrow.next.xy <- this.arrow.xy + c(-1, 1)*arrow.length/10
+            if(this.arrow.ang < 0) this.arrow.next.xy <- this.arrow.xy + c(1, -1)*arrow.length/10
+            if(this.arrow.ang < -90) this.arrow.next.xy <- this.arrow.xy + c(-1, -1)*arrow.length/10
+            graphics::arrows(this.arrow.xy[1], this.arrow.xy[2], this.arrow.next.xy[1], this.arrow.next.xy[2],
+                   length = arrow.length, code = 2,
+                   col = arrow.col[ifelse(length(arrow.col) > 1, p, 1)],
+                   lwd = arrow.lwd[ifelse(length(arrow.lwd) > 1, p, 1)])
+          }
+        }
+        # set location of the terminal product labels (end unless validly specified otherwise)
+        if (traj.lab.loc == 0 | traj.lab.loc > length(this.product.scores[, 1])) {
+          traj.lab.loc = length(this.product.scores[, 1])
+        }
+        graphics::points(x=this.product.scores[, 1][traj.lab.loc],
+               y=this.product.scores[, 2][traj.lab.loc],
+               pch = 15, cex = 2.75, lwd = lwd, col = ifelse(length(traj.col) == 1, traj.col[1], traj.col[p]) )
+        graphics::text(x = this.product.scores[, 1][traj.lab.loc],
+             y = this.product.scores[, 2][traj.lab.loc],
+             labels = ifelse(length(traj.lab) == 0, as.character(p), as.character(traj.lab[p])), cex = traj.lab.cex, col="white")
+      }
+      if(type=="smooth"){
+        requireNamespace("stats", quietly = TRUE)
+        x.loess <- stats::loess(this.product.scores[, 1] ~ I(1:nrow(this.product.scores)), span = span) #assume departures from smoothness are due to error
+        y.loess <- stats::loess(this.product.scores[, 2] ~ I(1:nrow(this.product.scores)), span = span)
+        graphics::points(x = stats::fitted(x.loess)[traj.points], y = stats::fitted(y.loess)[traj.points],
+               pch = 20, cex=traj.cex, col = ifelse(length(traj.col) == 1, traj.col[1], traj.col[p]) ) # plot trajectories
+        if(class(traj.col.seg) == "logical" & is.na(traj.col.seg)[1]){
+          graphics::lines(stats::fitted(x.loess), stats::fitted(y.loess), lwd = lwd, col = ifelse(length(traj.col) == 1, traj.col[1], traj.col[p]))
+        } else {
+          for(j in 2:length(stats::fitted(x.loess))){
+            graphics::lines(stats::fitted(x.loess)[c(j - 1, j)],
+                            stats::fitted(y.loess)[c(j - 1, j)],
+                            lwd = lwd, col = traj.col.seg[p, j - 1])
+          }
+        }
+        if(!is.na(arrow.loc[1])){
+          # Add arrow(s)
+          if(is.na(arrow.col[1])) arrow.col <- traj.col
+          if(is.na(arrow.lwd[1])) arrow.lwd <- lwd
+          for(arr in seq_along(arrow.loc)){
+            this.arrow.xy <- c(stats::fitted(x.loess)[arrow.loc[arr]], stats::fitted(y.loess)[arrow.loc[arr]])
+            this.arrow.ang <- atan2(mean(stats::fitted(y.loess)[max(arrow.loc[arr], 1):min(arrow.loc[arr] + 25, length(stats::fitted(y.loess)))]) - this.arrow.xy[2],
+                                    mean(stats::fitted(x.loess)[max(arrow.loc[arr], 1):min(arrow.loc[arr] + 25, length(stats::fitted(x.loess)))]) - this.arrow.xy[1]) * 180 / pi
+            # get the 'next point' inelegantly
+            if(this.arrow.ang > 0) this.arrow.next.xy <- this.arrow.xy + c(1, 1)*arrow.length/100
+            if(this.arrow.ang > 90) this.arrow.next.xy <- this.arrow.xy + c(-1, 1)*arrow.length/100
+            if(this.arrow.ang < 0) this.arrow.next.xy <- this.arrow.xy + c(1, -1)*arrow.length/100
+            if(this.arrow.ang < -90) this.arrow.next.xy <- this.arrow.xy + c(-1, -1)*arrow.length/100
+            graphics::arrows(this.arrow.xy[1], this.arrow.xy[2], this.arrow.next.xy[1], this.arrow.next.xy[2],
+                   length = arrow.length, code = 2,
+                   col = arrow.col[ifelse(length(arrow.col) > 1, p, 1)],
+                   lwd = arrow.lwd[ifelse(length(arrow.lwd) > 1, p, 1)])
+          }
+        }
+        # set location of the terminal product labels (end unless validly specified otherwise)
+        if (traj.lab.loc == 0 | traj.lab.loc > length(stats::fitted(x.loess))) {
+          traj.lab.loc = length(stats::fitted(x.loess))
+        }
+        graphics::points(x = stats::fitted(x.loess)[traj.lab.loc], y = stats::fitted(y.loess)[traj.lab.loc],
+               pch = 15, cex = 2.75, lwd = lwd, col = ifelse(length(traj.col) == 1, traj.col[1], traj.col[p]))
+        graphics::text(x = stats::fitted(x.loess)[traj.lab.loc], y = stats::fitted(y.loess)[traj.lab.loc],
+             labels=ifelse(length(traj.lab) == 0, as.character(p), as.character(traj.lab[p])), cex = traj.lab.cex, col="white")
+      }
+    }
+    graphics::points(y[, 1], y[, 2], cex = 1, col = attributes.col, pch = attributes.pch)
+    yoff1 <- .5 * graphics::strwidth(y.names, cex = 0.75) + .5 * graphics::strwidth("o", cex = .75)
+    yoff2 <- .5 * graphics::strheight(y.names, cex = 0.75) + .5 * graphics::strheight("o", cex = .75)
+    graphics::text(y[, 1] + yoff1 + att.offset.x, y[, 2] + yoff2 + att.offset.y, y.names, cex = 0.75, xpd = TRUE, col = attributes.col)
+
+    if(save.format[gg] == "png" & save.as[gg] != "") grDevices::savePlot(save.as[gg], type = "png")
+    if(save.format[gg] == "eps" & save.as[gg] != "") grDevices::dev.off()
+  }
+}
+
+#' Calculate city block distance between two matrices
+#'
+#' Calculates the city block distance between two matrices.
+#' @name dist.city.block
+#' @aliases dist.city.block
+#' @usage dist.city.block(x, y)
+#' @param x first matrix
+#' @param y second matrix
+#' @return cbdist city block distance between \code{x} and \code{y}
+#' @export
+#' @encoding UTF-8
+#' @examples
+#'   x <- matrix(0, nrow = 5, ncol = 7)
+#'   y <- matrix(1, nrow = 5, ncol = 7)
+#'   dist.city.block(x, y)
+#'
+#'   y <- matrix(c(rep(0, 15), rep(1, 20)), nrow = 5, ncol = 7)
+#'   dist.city.block(x, y)
+dist.city.block <- function (x, y) {
+  if(dim(x)[[1L]] == dim(y)[[1L]] & dim(x)[[2L]] == dim(y)[[2L]]){
+    return(cbdist = sum(abs(x - y), na.rm = TRUE) / (dim(x)[[1L]] * dim(y)[[2L]]))
+  } else {
+    print("Incompatible matrices in dist.city.block")
+  }
+}
+
+#' Quantify TCATA assessor replication
+#'
+#' Quantify TCATA assessor replication using city block distance
+#' @name similarity.tcata.replication
+#' @aliases similarity.tcata.replication
+#' @param this.assessor TCATA data (given as an indicator matrix) for assessor of interest
+#' @param other.assessors TCATA data (given as an indicator matrix) for other assessors
+#' @return replication.index city block distance between this assessor and other assessors
+#' @details Similarity between one TCATA assessor and other assessors on the panel is quantified. The replication index can take on values between \code{0} and \code{1}, which indicate complete dissimilarity (disagreement) and complete similarity (agreement), respectively.
+#' @export
+#' @encoding UTF-8
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @examples
+#'   # Toy TCATA data for three assessors: a1, a2, a3
+#'   a1 <- rbind(rep(0, 7),
+#'               rep(0, 7),
+#'               c(0, 0, 0, 1, 1, 1, 1),
+#'               c(0, 0, 0, 1, 1, 1, 1),
+#'               c(0, 0, 0, 1, 1, 1, 0))
+#'   a2 <- rbind(c(0, 0, 0, 1, 1, 1, 0),
+#'               rep(0, 7),
+#'               c(0, 1, 1, 1, 1, 1, 0),
+#'               rep(1, 7),
+#'               c(0, 0, 0, 1, 1, 1, 1))
+#'   a3 <- rbind(rep(0, 7),
+#'               rep(0, 7),
+#'               rep(1, 7),
+#'               rep(1, 7),
+#'               rep(1, 7))
+#'
+#'   # Quantify similarity of assessor a1 to the other assessors
+#'   similarity.tcata.replication(a1, rbind(a2, a3))
+similarity.tcata.replication <- function(this.assessor, other.assessors){
+  n.blocks <- nrow(other.assessors) / nrow(this.assessor)
+  if(n.blocks %% 1 != 0) print("Incompatible matrices in similarity.tcata.replication")
+  if(dim(this.assessor)[[1L]] > dim(other.assessors)[[1L]] & dim(this.assessor)[[2L]] != dim(other.assessors)[[2L]]) print("Incompatible matrices in similarity.tcata.replication")
+  this.asssessor.block <- this.assessor
+  if(n.blocks > 1){
+    for(i in 2:n.blocks){
+      this.asssessor.block <- rbind(this.asssessor.block, this.assessor)
+    }
+  }
+  return(replication.index = 1 - dist.city.block(this.asssessor.block, other.assessors))
+}
+
+#' Quantify TCATA assessor repeatability
+#'
+#' Quantify TCATA assessor repeatability using city block distance
+#' @name similarity.tcata.repeatability
+#' @aliases similarity.tcata.repeatability
+#' @param X list of matrices, where each matrix is a TCATA data (given as an indicator matrix) for assessor of interest for one rep
+#' @return repeatability.index average city block distance between matrices from replicated evaluations
+#' @details Similarity between repeated evaluations given by a TCATA assessor is quantified. The repeatability index can take on values between \code{0} and \code{1}, which indicate complete dissimilarity (non-repeatability) and complete similarity (repeatability), respectively.
+#' @export
+#' @encoding UTF-8
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @examples
+#'   # Toy data from one TCATA assessor on a product over three sessions: rep1, rep2, rep3
+#'   rep1 <- rbind(rep(0, 7),
+#'                 rep(0, 7),
+#'                 c(0, 0, 0, 1, 1, 1, 1),
+#'                 c(0, 0, 0, 1, 1, 1, 1),
+#'                 c(0, 0, 0, 1, 1, 1, 0))
+#'   rep2 <- rbind(c(0, 0, 0, 1, 1, 1, 0),
+#'                 rep(0, 7),
+#'                 c(0, 1, 1, 1, 1, 1, 0),
+#'                 rep(1, 7),
+#'                 c(0, 0, 0, 1, 1, 1, 1))
+#'   rep3 <- rbind(rep(0, 7),
+#'                 rep(0, 7),
+#'                 rep(1, 7),
+#'                 rep(1, 7),
+#'                 rep(1, 7))
+#'   rep.data <- list(rep1, rep2, rep3)
+#'
+#'   # Quantify similarity of assessor a1 to the other assessors
+#'   similarity.tcata.repeatability(rep.data)
+similarity.tcata.repeatability <- function(X){
+  if(is.list(X)){
+    for(ll in 2:length(X)){
+      if(dim(X[[ll - 1]])[[1L]] != dim(X[[ll]])[[1L]] || dim(X[[ll - 1]])[[2L]] != dim(X[[ll]])[[2L]]){
+        print("Incompatible matrices in similarity.tcata.repeatability")
+        return(NA)
+      }
+    }
+  } else {
+    return(1) # The agreement of something with itself is 1
+  }
+  requireNamespace("utils", quietly = TRUE)
+  combn.reps <- utils::combn(length(X), 2)
+  dis.repeat <- 0
+  for(cc in 1:ncol(combn.reps)){
+    dis.repeat <- dis.repeat + dist.city.block(X[[combn.reps[1, cc]]], X[[combn.reps[2, cc]]])
+  }
+  return(repeatability.index = 1 - dis.repeat / ncol(combn.reps))
+}
