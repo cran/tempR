@@ -47,7 +47,7 @@ std.time(y) # standardized time
 # time standardization using 'bars' data set
 # only sample 1 will be done (for illustrative purposes)
 eval1 <- unique(bars[bars$sample == 1, (1:3)])
-bar1.std <- cbind(unique(bars[bars$sample == 1, (1:4)]), matrix(0, ncol = 101))
+bar1.std <- data.frame(unique(bars[bars$sample == 1, (1:4)]), matrix(0, ncol = 101))
 
 for (e in 1:nrow(eval1)){
   bar1.std[bar1.std$assessor == eval1$assessor[e] &

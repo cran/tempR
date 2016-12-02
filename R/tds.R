@@ -128,24 +128,29 @@ get.dominance.rates <- function(citations, n) {
 
 #' Get times
 #'
-#' Convenience function to convert exported time labels from character format c('time_0.1s', 'time_0.2s', ...) to numeric format c(0.1, 0.2, ...).
+#' Convenience function to convert exported time labels, e.g. from character format c('time_0.1s', 'time_0.2s', ...) or related format to numeric format c(0.1, 0.2, ...).
 #' @name get.times
 #' @aliases get.times
-#' @usage get.times(time.char)
-#' @param time.char vector of characters all starting with "time_"
+#' @usage get.times(time.char, trim.left = "time_", trim.right = "s")
+#' @param time.char vector of characters containing the time
+#' @param trim.left string to be trimmed from left
+#' @param trim.right string to be trimmed from right
 #' @return times vector of times in numeric format
 #' @export
 #' @encoding UTF-8
 #' @details Convenience function for getting times from column headers from common data export formats.
 #' @examples
 #' get.times(colnames(bars)[-c(1:4)])
-get.times <- function(time.char) {
+#'
+#' (sample.colnames <- paste0("X", 0:30))
+#' get.times(sample.colnames, trim.left = "X", trim.right = "")
+get.times <- function(time.char, trim.left = "time_", trim.right = "s") {
   # convenience function converts time labels in format
   # c('time_0.1s', 'time_0.2s', ...) to numeric c(0.1, 0.2,
   # ...)
   for (i in 1:length(time.char)) {
-    time.char[i] <- substr(time.char[i], nchar("time_") +
-                                 1, nchar(time.char[i]) - 1)
+    time.char[i] <- substr(time.char[i], nchar(trim.left) +
+                                 1, nchar(time.char[i]) - nchar(trim.right))
   }
   return(times = as.numeric(time.char))
 }
@@ -229,12 +234,12 @@ get.significance <- function(chance, n, alpha = 0.05) {
 #' round(b.diff, 3)
 #'
 #' # toy example
-#' x <- cbind(t10 = c( NA,  0,  0,  0,  1,  1,  0,  0,  1,  0, NA),
-#'            t15 = c(  1,  0,  0,  1,  1,  1,  0,  1,  0,  1,  0),
-#'            t20 = c(  1,  1,  1,  1,  1,  1,  1,  0,  1, NA,  0))
-#' y <- cbind(t10 = c( NA, NA,  0,  0,  1,  1,  0,  0,  0,  0, NA),
-#'            t15 = c(  0,  0,  0,  0,  1,  0,  1,  1,  0,  1,  1),
-#'            t20 = c(  1,  0,  1,  1,  0,  0,  1, NA,  1, NA,  0))
+#' x <- data.frame(t10 = c( NA,  0,  0,  0,  1,  1,  0,  0,  1,  0, NA),
+#'                 t15 = c(  1,  0,  0,  1,  1,  1,  0,  1,  0,  1,  0),
+#'                 t20 = c(  1,  1,  1,  1,  1,  1,  1,  0,  1, NA,  0))
+#' y <- data.frame(t10 = c( NA, NA,  0,  0,  1,  1,  0,  0,  0,  0, NA),
+#'                 t15 = c(  0,  0,  0,  0,  1,  0,  1,  1,  0,  1,  1),
+#'                 t20 = c(  1,  0,  1,  1,  0,  0,  1, NA,  1, NA,  0))
 #' get.differences(x, y)
 get.differences <- function(x, y) {
   return(out = apply(x, 2, mean, na.rm = TRUE) - apply(y, 2, mean, na.rm = TRUE))
@@ -256,12 +261,12 @@ get.differences <- function(x, y) {
 #' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal Dominance of Sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' # toy data example
-#' x <- cbind(t10 = c( rep(NA, 15), rep(0, 50), rep(1, 20)),
-#'            t15 = c( rep(NA,  4), rep(0, 61), rep(1, 20)),
-#'            t20 = c( rep(0, 55), rep(1, 30)))
-#' y <- cbind(t10 = c( rep(NA, 15), rep(0, 50), rep(1, 20)),
-#'            t15 = c( rep(NA,  0), rep(0, 21), rep(1, 64)),
-#'            t20 = c( rep(0, 35), rep(1, 50)))
+#' x <- data.frame(t10 = c(rep(NA, 15), rep(0, 50), rep(1, 20)),
+#'                 t15 = c(rep(NA,  4), rep(0, 61), rep(1, 20)),
+#'                 t20 = c(rep(0, 55), rep(1, 30)))
+#' y <- data.frame(t10 = c(rep(NA, 15), rep(0, 50), rep(1, 20)),
+#'                 t15 = c(rep(NA,  0), rep(0, 21), rep(1, 64)),
+#'                 t20 = c( rep(0, 35), rep(1, 50)))
 #' signif.xy <- get.significance.diff(x, y)
 #' #compare with observed differences
 #' diff.xy <- get.differences(x, y)
@@ -397,7 +402,7 @@ lengthwhichis.na <- function(x){
 #' # time standardization using 'bars' data set
 #' # only sample 1 will be done (for illustrative purposes)
 #' eval1 <- unique(bars[bars$sample == 1, (1:3)])
-#' bar1.std <- cbind(unique(bars[bars$sample == 1, (1:4)]), matrix(0, ncol = 101))
+#' bar1.std <- data.frame(unique(bars[bars$sample == 1, (1:4)]), matrix(0, ncol = 101))
 #'
 #' for (e in 1:nrow(eval1)){
 #'   bar1.std[bar1.std$assessor == eval1$assessor[e] &

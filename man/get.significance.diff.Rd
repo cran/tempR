@@ -25,12 +25,12 @@ Calculation of least significant differences for TDS difference curves based on 
 }
 \examples{
 # toy data example
-x <- cbind(t10 = c( rep(NA, 15), rep(0, 50), rep(1, 20)),
-           t15 = c( rep(NA,  4), rep(0, 61), rep(1, 20)),
-           t20 = c( rep(0, 55), rep(1, 30)))
-y <- cbind(t10 = c( rep(NA, 15), rep(0, 50), rep(1, 20)),
-           t15 = c( rep(NA,  0), rep(0, 21), rep(1, 64)),
-           t20 = c( rep(0, 35), rep(1, 50)))
+x <- data.frame(t10 = c(rep(NA, 15), rep(0, 50), rep(1, 20)),
+                t15 = c(rep(NA,  4), rep(0, 61), rep(1, 20)),
+                t20 = c(rep(0, 55), rep(1, 30)))
+y <- data.frame(t10 = c(rep(NA, 15), rep(0, 50), rep(1, 20)),
+                t15 = c(rep(NA,  0), rep(0, 21), rep(1, 64)),
+                t20 = c( rep(0, 35), rep(1, 50)))
 signif.xy <- get.significance.diff(x, y)
 #compare with observed differences
 diff.xy <- get.differences(x, y)

@@ -87,7 +87,12 @@ Plot trajectories following PCA on multiblock TCATA proportions, or same for Tem
 \examples{
 # example using 'syrah' data set
 syrah.pca <- prcomp(syrah[1:248, -c(1:4)], scale. = FALSE)
-plot_pca.trajectories(syrah.pca, syrah[1:248, c(1, 4)], colnames(syrah)[-c(1:4)], type = "raw")
+plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
+                      attributes = colnames(syrah)[-c(1:4)], type = "raw")
+
+# now with smoothing; may need to play with the span parameter to get appropriate smoothing
+plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
+                      attributes = colnames(syrah)[-c(1:4)], type = "smooth", span = 0.3)
 }
 \references{
 Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}

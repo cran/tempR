@@ -5,21 +5,28 @@
 \alias{get.times}
 \title{Get times}
 \usage{
-get.times(time.char)
+get.times(time.char, trim.left = "time_", trim.right = "s")
 }
 \arguments{
-\item{time.char}{vector of characters all starting with "time_"}
+\item{time.char}{vector of characters containing the time}
+
+\item{trim.left}{string to be trimmed from left}
+
+\item{trim.right}{string to be trimmed from right}
 }
 \value{
 times vector of times in numeric format
 }
 \description{
-Convenience function to convert exported time labels from character format c('time_0.1s', 'time_0.2s', ...) to numeric format c(0.1, 0.2, ...).
+Convenience function to convert exported time labels, e.g. from character format c('time_0.1s', 'time_0.2s', ...) or related format to numeric format c(0.1, 0.2, ...).
 }
 \details{
 Convenience function for getting times from column headers from common data export formats.
 }
 \examples{
 get.times(colnames(bars)[-c(1:4)])
+
+(sample.colnames <- paste0("X", 0:30))
+get.times(sample.colnames, trim.left = "X", trim.right = "")
 }
 

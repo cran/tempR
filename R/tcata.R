@@ -55,20 +55,12 @@ get.smooth <- function(y, w = NULL, spar = 0.5, low.bound = 0, up.bound = 1) {
 #' @encoding UTF-8
 #' @examples
 #' # vector with gaps: x with NA gaps (e.g. due to attribute cuing)
-#' (x <- rep(c(rep(NA,4), rep(1,4)), 2))
+#' (x <- rep(c(rep(NA, 4), rep(1, 4)), 2))
 #' fill.gaps(x, subst = NA)
 #'
 #' # array with gaps: y with an gap of 0s (e.g. due to attribute fading)
-#' (y <- structure(c(0, 1, 0,
-#'                   0, 1, 1,
-#'                   0, 1, 1,
-#'                   1, 1, 1,
-#'                   1, 1, 0,
-#'                   1, 1, 0,
-#'                   1, 1, 0,
-#'                   1, 0, 1,
-#'                   1, 0, 1,
-#'                   1, 0, 0),
+#' (y <- structure(c(0, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0,
+#'                   1, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0),
 #'                 .Dim = c(3L, 10L),
 #'                 .Dimnames = list(1:3, 1:10)))
 #' fill.gaps(y)
@@ -146,43 +138,95 @@ adjust.brightness <- function(rgb.in, percent = 10) {
     # find the ones that are too bright
     col.over <- 1 * (c(new.red, new.green, new.blue) - rep(col.max, times = 3) > 0)
     col.redist <- sum(col.over * (c(new.red, new.green, new.blue) - c(col.max, col.max, col.max)))
-    if(col.over[1]){
-      new.red <- col.max
-    } else {
-      new.red <- min(col.max, round(new.red + col.redist / sum(col.over)))
-    }
-    if(col.over[2]){
-      new.green <- col.max
-    } else {
-      new.green <- min(col.max, round(new.green + col.redist / sum(col.over)))
-    }
-    if(col.over[3]){
-      new.blue <- col.max
-    } else {
-      new.blue <- min(col.max, round(new.blue + col.redist / sum(col.over)))
-    }
+    new.red <- ifelse(col.over[1], col.max, min(col.max, round(new.red + col.redist / sum(col.over))))
+    # if(col.over[1]){
+    #   new.red <- col.max
+    # } else {
+    #   new.red <- min(col.max, round(new.red + col.redist / sum(col.over)))
+    # }
+    new.green <- ifelse(col.over[2], col.max, min(col.max, round(new.green + col.redist / sum(col.over))))
+    # if(col.over[2]){
+    #   new.green <- col.max
+    # } else {
+    #   new.green <- min(col.max, round(new.green + col.redist / sum(col.over)))
+    # }
+    new.blue <- ifelse(col.over[3], col.max, min(col.max, round(new.blue + col.redist / sum(col.over))))
+    # if(col.over[3]){
+    #   new.blue <- col.max
+    # } else {
+    #   new.blue <- min(col.max, round(new.blue + col.redist / sum(col.over)))
+    # }
   }
   if(new.min <= col.min) {
     # one or more colours is too dark
     col.under <- 1 * (c(new.red, new.green, new.blue) - c(col.min, col.min, col.min) < 0)
     col.redist <- sum(col.under * (rep(col.min, times = 3) - c(new.red, new.green, new.blue)))
-    if(col.under[1]){
-      new.red <- col.min
-    } else {
-      new.red <- max(col.min, round(new.red + col.redist / sum(col.under)))
-    }
-    if(col.under[2]){
-      new.green <- col.min
-    } else {
-      new.green <- max(col.min, round(new.green + col.redist / sum(col.under)))
-    }
-    if(col.under[3]){
-      new.blue <- col.min
-    } else {
-      new.blue <- max(col.min, round(new.blue + col.redist / sum(col.under)))
-    }
+    new.red <- ifelse(col.under[1], col.min, max(col.min, round(new.red + col.redist / sum(col.under))))
+    # if(col.under[1]){
+    #   new.red <- col.min
+    # } else {
+    #   new.red <- max(col.min, round(new.red + col.redist / sum(col.under)))
+    # }
+    new.green <- ifelse(col.under[2], col.min, max(col.min, round(new.green + col.redist / sum(col.under))))
+    # if(col.under[2]){
+    #   new.green <- col.min
+    # } else {
+    #   new.green <- max(col.min, round(new.green + col.redist / sum(col.under)))
+    # }
+    new.blue <- ifelse(col.under[3], col.min, max(col.min, round(new.blue + col.redist / sum(col.under))))
+    # if(col.under[3]){
+    #   new.blue <- col.min
+    # } else {
+    #   new.blue <- max(col.min, round(new.blue + col.redist / sum(col.under)))
+    # }
   }
   return(hex = grDevices::rgb(new.red, new.green, new.blue, max = 255))
+}
+
+#' Get decluttering matrix indicating where to show/hide reference lines
+#'
+#' Declutter TCATA curves by hiding reference lines from plots showing TCATA curves.
+#' @name get.decluttered
+#' @aliases get.decluttered
+#' @usage get.decluttered(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05)
+#' @param x selections for sample of interest (can be a vector if several samples of interest)
+#' @param n.x evaluations of \code{x} (can be a vector if several samples of interest)
+#' @param y selections for comparison (can be a vector if several comparisons will be made)
+#' @param n.y evaluations of \code{y} (can be a vector if several comparisons of interest)
+#' @param alpha significance level
+#' @return declutter vector in which \code{1} indicates "show" and \code{NA} indicates "hide"
+#' @export
+#' @encoding UTF-8
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @seealso \code{\link[stats]{fisher.test}}
+#' @examples
+#' # example using 'ojtcata' data set
+#' data(ojtcata)
+#' x <- aggregate(ojtcata[, -c(1:4)], list(samp = ojtcata$samp, attribute = ojtcata$attribute), sum)
+#' p.1.checked <- x[x$samp == 1, -c(1:2)]
+#' p.1.eval <- length(unique(ojtcata$cons))
+#' p.not1.checked <- aggregate(x[, -c(1:2)], list(attribute = x$attribute), sum)[, -1]
+#' p.not1.eval <- length(unique(ojtcata$cons)) * (length(unique(ojtcata$samp)) - 1)
+#'
+#' # reference lines for contrast products
+#' p.1.refline <- p.not1.checked / p.not1.eval
+#' # decluttering matrix corresponds to the dimensions of p.1.refline
+#' p.1.declutter <- get.decluttered(x = unlist(p.1.checked), n.x = p.1.eval,
+#'                                         y = unlist(p.not1.checked), n.y = p.not1.eval)
+#' (p.1.declutter <- matrix(p.1.declutter, nrow = nrow(p.1.checked)))
+get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
+  if(any(is.na(x), is.na(y), is.na(n.x), is.na(n.y))) return(print("All parameters required"))
+  if(length(x) != length(y)) return(print("Length of x and y must be equal"))
+  if(length(n.x) > 1 & length(x) != length(n.x)) return(print("Length of x and n.x are mismatched"))
+  if(length(n.y) > 1 & length(y) != length(n.y)) return(print("Length of y and n.y are mismatched"))
+  tmp <- data.frame(x1 = x, x0 = n.x - x, y1 = y, y0 = n.y - y)
+  fisher.test2 <- function(x){
+    requireNamespace("stats", quietly = TRUE)
+    return(stats::fisher.test(matrix(x, nrow = 2))$p)
+  }
+  declutter =  1 * (apply(tmp, 1, fisher.test2) < alpha)
+  declutter[declutter == 0] <- NA
+  return(declutter = declutter)
 }
 
 #' Temporal Check-All-That-Apply (TCATA) curve
@@ -235,6 +279,29 @@ adjust.brightness <- function(rgb.in, percent = 10) {
 #' low1 <- t(syrah[seq(3, 1026, by = 6), -c(1:4)])
 #' colnames(low1) <- 10:180
 #' tcata.line.plot(get.smooth(low1), lwd = 2, main = "Low-ethanol wine (Sip 1)")
+#'
+#' # example using 'ojtcata' data set
+#' data(ojtcata)
+#' x <- aggregate(ojtcata[, -c(1:4)], list(samp = ojtcata$samp, attribute = ojtcata$attribute), sum)
+#' p.1.checked <- x[x$samp == 1, -c(1:2)]
+#' p.1.eval <- length(unique(ojtcata$cons))
+#' p.not1.checked <- aggregate(x[, -c(1:2)], list(attribute = x$attribute), sum)[, -1]
+#' p.not1.eval <- length(unique(ojtcata$cons)) * (length(unique(ojtcata$samp)) - 1)
+#'
+#' # reference lines for contrast products
+#' p.1.refline <- p.not1.checked / p.not1.eval
+#' # decluttering matrix corresponds to the dimensions of p.1.refline
+#' p.1.declutter <- matrix(get.decluttered(x = unlist(p.1.checked), n.x = p.1.eval,
+#'                                         y = unlist(p.not1.checked), n.y = p.not1.eval),
+#'                         nrow = nrow(p.1.checked))
+#' times <- get.times(colnames(x)[-c(1:2)])
+#' attributes <- unique(x$attribute)
+#' palettes <- make.palettes(length(attributes))
+#' tcata.line.plot(p.1.checked, n = p.1.eval, attributes = attributes, times = times,
+#'                 reference = p.1.refline, ref.lty = 3, declutter = p.1.declutter,
+#'                 highlight = TRUE, highlight.lwd = 4,
+#'                 line.col = palettes$pal, highlight.col = palettes$pal.light,
+#'                 main = "Sample 1", height = 7, width = 11, legend.cex = 0.7)
 tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
                             emphasis = NA, emphasis.lty = 1, emphasis.lwd = 3,
                             declutter = NA, chance.lty = 3,
@@ -249,12 +316,8 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
   requireNamespace("graphics", quietly = TRUE)
   if (length(attributes) == 0 ) attributes <- rownames(X)
   if (length(times) == 0 ) times <- as.numeric(colnames(X))
-  if (length(line.col) == 0 ) {
-    line.col <- pretty_palette(length(attributes))
-  }
-  if (length(highlight.col) == 0 ) {
-    highlight.col <- pretty_palette(length(attributes))
-  }
+  if (length(line.col) == 0 ) line.col <- pretty_palette(length(attributes))
+  if (length(highlight.col) == 0 ) highlight.col <- pretty_palette(length(attributes))
 
   X <- X/n
   grDevices::dev.new(height = height, width = width)
@@ -329,8 +392,8 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
 #' @name get.mat.diff.sign
 #' @aliases get.mat.diff.sign
 #' @param x citations for product x
-#' @param y citations for product y
 #' @param n.x total observations for x
+#' @param y citations for product y
 #' @param n.y total observations for y
 #' @param test.type So far only Fisher's exact test is implemented (\code{"f"})
 #' @seealso \code{\link[stats]{fisher.test}}
@@ -340,29 +403,27 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
 #' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #' # Toy TCATA citations data for two samples: s1, s2
-#' s1 <- rbind(sweet =  c(10, 23, 25, 26, 26, 43, 44),
-#'             bitter = c( 4, 18, 19, 27, 36, 43, 54),
-#'             sour =   c(40, 53, 85, 70, 46, 33, 24))
-#' s2 <- rbind(sweet =  c(11, 33, 45, 46, 56, 43, 44),
-#'             bitter = c( 0, 11, 11, 14, 25, 35, 34),
-#'             sour =   c(30, 33, 35, 20, 26, 23, 24))
+#' s1 <- t(data.frame(sweet =  c(10, 23, 25, 26, 26, 43, 44),
+#'                    bitter = c( 4, 18, 19, 27, 36, 43, 54),
+#'                    sour = c(40, 53, 85, 70, 46, 33, 24)))
+#' s2 <- t(data.frame(sweet = c(11, 33, 45, 46, 56, 43, 44),
+#'                    bitter = c( 0, 11, 11, 14, 25, 35, 34),
+#'                    sour = c(30, 33, 35, 20, 26, 23, 24)))
 #' colnames(s1) <- colnames(s2) <- paste0("time_", seq(5, 35, by = 5), "s")
 #' n <- 90
 #' signif <- get.mat.diff.sign(s1, s2, n, n)
 #' signif
-get.mat.diff.sign <- function(x, y, n.x = NA, n.y = NA, test.type = "f"){
+get.mat.diff.sign <- function(x = x, y = y, n.x = n.x, n.y = n.x, test.type = "f"){
   requireNamespace("stats", quietly = TRUE)
+  x1 <- c(x)
+  y1 <- c(y)
   out.mat <- x * 0
-  for(r in 1:nrow(x)){
-    for(c in 1:ncol(x)){
-      if(is.na(n.x)) n.x <- sum(x[r, c], x[r, c], na.rm = TRUE)
-      if(is.na(n.y)) n.y <- sum(y[r, c], y[r, c], na.rm = TRUE)
-      if (test.type == "f"){
-        fet2x2 <- rbind(c(x[r, c], n.x - x[r, c]), c(y[r, c], n.y - y[r, c]))
-        out.mat[r, c] <- stats::fisher.test(fet2x2)$p.value
-      }
-    }
+  tmp <- data.frame(x1 = x1, x0 = c(n.x) - x1, y1 = y1, y0 = c(n.y) - y1)
+  fisher.test2 <- function(x){
+    requireNamespace("stats", quietly = TRUE)
+    return(stats::fisher.test(matrix(x, nrow = 2))$p)
   }
+  out.mat <- matrix(apply(tmp, 1, fisher.test2), nrow = nrow(as.matrix(x)), ncol = ncol(as.matrix(x)))
   return(out.mat)
 }
 
@@ -472,11 +533,13 @@ tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(),
               if(continue){
                 start.x <- t
                 findnext0 <- which(is.na(mat.diff.sign.out[a,min(start.x+1,length(colnames(mat.diff.sign.out))):length(colnames(mat.diff.sign.out))]))
-                if (sum(findnext0*1)==0) {
-                  stop.x <- length(colnames(mat.diff.sign.out)) # all significant; take the last time in the evaluation
-                } else {
-                  stop.x <- findnext0[1] - 1 + start.x # take the first time that is non-significant
-                }
+                # use the first time that is non-significant, or the last time
+                stop.x <- ifelse(sum(findnext0*1)==0, length(colnames(mat.diff.sign.out)), findnext0[1] - 1 + start.x)
+                #if (sum(findnext0*1)==0) {
+                #  stop.x <- length(colnames(mat.diff.sign.out)) # all significant;
+                #} else {
+                #  stop.x <- findnext0[1] - 1 + start.x # take the first time that is non-significant
+                #}
                 y.start.x <- start.x
                 y.stop.x <- stop.x
                 graphics::lines(x = as.numeric(colnames(mat.diff[start.x:stop.x])), y = mat.diff[a,c(y.start.x:y.stop.x)], col = line.col[a], lwd = emphasis.lwd)
@@ -518,16 +581,17 @@ convert.tcata <- function(X, times, decimal.places = 2){
   if(times[1] == 0) array.base = 0
   if(times[1] == 1) array.base = 1
   if(is.na(array.base)) no.error <- FALSE
-  if(array.base == 0){
-    adj <- 1
-  } else {
-    adj <- 0
-  }
+  adj <- ifelse(array.base == 0, 1, 0)
+  #if(array.base == 0){
+  #  adj <- 1
+  #} else {
+  #  adj <- 0
+  #}
   times <- unique(round(times * (10^decimal.places), 0) / (10^decimal.places))
   out.vec <- rep(0, times = length(times))
   in.vec <- X * (10^decimal.places)
 
-  if( no.error ) {
+  if (no.error) {
     for( r in 1:nrow(in.vec) ){
       out.vec[ (in.vec[r, 1]+adj):(in.vec[r, 2]+adj) ] <- 1
     }
@@ -564,17 +628,13 @@ convert.tcategory <- function(X, in.scores, times, decimal.places = 2){
   if(times[1] == 0) array.base = 0
   if(times[1] == 1) array.base = 1
   if(is.na(array.base)) no.error <- FALSE
-  if(array.base == 0){
-    adj <- 1
-  } else {
-    adj <- 0
-  }
+  adj <- ifelse(array.base == 0, 1, 0)
   times <- unique(round(times * (10^decimal.places), 0) / (10^decimal.places))
   out.vec <- rep(0, times = length(times))
   in.vec <- X * (10^decimal.places)
   if(length(in.scores) != nrow(X)) no.error <- FALSE
 
-  if( no.error ) {
+  if(no.error) {
     for( r in 1:nrow(in.vec) ){
       out.vec[ (in.vec[r, 1]+adj):(in.vec[r, 2]+adj) ] <- in.scores[r]
     }
@@ -604,6 +664,31 @@ pretty_palette <- function(n){
   return(cv = c("red", "lightblue", "forestgreen", "purple", "hotpink", "chocolate4",
       "orange", "steelblue", "grey", "green",  "khaki", "maroon",
       more.col)[1:n])
+}
+
+#' Convenience function for getting a pretty palette and highlight colours
+#'
+#' Make a vector of n pretty colours, and n matching highlight colours.
+#' @name make.palettes
+#' @aliases make.palettes
+#' @encoding UTF-8
+#' @param n number of colours for each palette
+#' @return pal A character vector, \code{cv}, of colours that look pretty.
+#' @return pal.light A character vector, \code{cv}, of matching highlight colours that look pretty.
+#' @export
+#' @examples
+#' make.palettes(8)
+make.palettes <- function(n){
+  pal <- pal.light <- pretty_palette(n)
+  lighten.palette <- function(x){
+    requireNamespace("grDevices", quietly = TRUE)
+    x <- adjust.brightness(grDevices::col2rgb(x), 0)
+    x <- adjust.brightness(grDevices::col2rgb(x), 2500)
+    return(x)
+  }
+  pal.light <- sapply(pal, lighten.palette)
+  names(pal.light) <- NULL
+  return(list(pal = pal, pal.light = pal.light))
 }
 
 #' Plot trajectories based on Temporal Check-All-That-Apply (TCATA) data
@@ -659,7 +744,12 @@ pretty_palette <- function(n){
 #' @examples
 #' # example using 'syrah' data set
 #' syrah.pca <- prcomp(syrah[1:248, -c(1:4)], scale. = FALSE)
-#' plot_pca.trajectories(syrah.pca, syrah[1:248, c(1, 4)], colnames(syrah)[-c(1:4)], type = "raw")
+#' plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
+#'                       attributes = colnames(syrah)[-c(1:4)], type = "raw")
+#'
+#' # now with smoothing; may need to play with the span parameter to get appropriate smoothing
+#' plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
+#'                       attributes = colnames(syrah)[-c(1:4)], type = "smooth", span = 0.3)
 plot_pca.trajectories <- function( in.pca = in.pca,
                                    products.times = matrix(NA),
                                    attributes = c(),
@@ -697,9 +787,9 @@ plot_pca.trajectories <- function( in.pca = in.pca,
   # attribute loadings
   loadings <- in.pca$rotation[,dims] * in.pca$sdev[dims]
   if( length(attributes) > 0 ) {
-    y.names <- attributes
+   y.names <- attributes
   } else {
-    y.names <- paste0("var",c(1:nrow(loadings)))
+   y.names <- paste0("var",c(1:nrow(loadings)))
   }
 
   # rescale for biplot
@@ -743,7 +833,8 @@ plot_pca.trajectories <- function( in.pca = in.pca,
 
   if(dim(products.times)[1]==1 & dim(products.times)[2]==1){
     print("Products & Time matrix missing. Defaulting to one product over time.")
-    products.times <- cbind(1, 1:length(in.pca$x[, 1]))
+    #** products.times <- cbind(1, 1:length(in.pca$x[, 1]))
+    products.times <- data.frame(products = 1, times = 1:length(in.pca$x[, 1]))
   }
   products.labels <- unique(products.times[, 1])
   times.labels <- unique(products.times[, 2])
@@ -762,9 +853,7 @@ plot_pca.trajectories <- function( in.pca = in.pca,
     ylab = paste0("Dimension ", dims[2], " (", format(var.exp[2], nsmall = 2,  digits = 2), "%)")
 
   for (gg in 1:length(save.format)){
-    if(save.format[gg] == "eps" & save.as[gg] != "") {
-      grDevices::postscript(save.as[gg])
-    }
+    if(save.format[gg] == "eps" & save.as[gg] != "") grDevices::postscript(save.as[gg])
 
     graphics::plot(c(y[, 1], scores[, 1]), c(y[, 2], scores[, 2]), type="n", xlim = xlim, ylim = ylim, xlab = xlab, ylab = ylab, axes = F, main = main)
     graphics::box()
@@ -992,3 +1081,66 @@ similarity.tcata.repeatability <- function(X){
   }
   return(repeatability.index = 1 - dis.repeat / ncol(combn.reps))
 }
+
+#' Count attribute selections
+#'
+#' Count the number of times that the attribute was selected (or optionally: deselected) in a single TCATA or TDS evaluation.
+#' @name count.selections
+#' @aliases count.selections
+#' @param x vector of binary data (with possible values \code{0} or \code{1})
+#' @param deselections set to \code{TRUE} if purpose is to count the number of deselections
+#' @return count of selections (or deselections if \code{deselections = TRUE})
+#' @details Count the number of times that the attribute was selected (or, optionally, deselected) in a single TCATA or TDS evaluation.
+#' @export
+#' @encoding UTF-8
+#' @examples
+#' data(bars)
+#' paste0(bars[1, -c(1:4)], collapse = "")
+#' # this attribute was checked 3 times and unchecked 2 times
+#' count.selections(bars[1, -c(1:4)])
+#' count.selections(bars[1, -c(1:4)], deselections = TRUE)
+count.selections <- function(x, deselections = FALSE){
+  search_pattern <- "01"
+  append_pattern <- "0"
+  if(deselections == TRUE){
+    search_pattern <- "10"
+    append_pattern <- "1"
+  }
+  x <- paste0("0", paste0(x, collapse = ""), append_pattern) # will not interfere with finding the search pattern
+  return(length(unlist(strsplit(x, search_pattern, fixed = TRUE))) - 1)
+}
+
+#' Get bootstrap confidence bands for attribute selections
+#'
+#' Get bootstrap confidence bands for TCATA attribute citation rates or TDS attribute dominance rates.
+#' @name bootstrap.band
+#' @aliases bootstrap.band
+#' @param X data frame of indicator data (with possible values \code{0} or \code{1})
+#' @param boot number of virtual panels
+#' @param alpha alpha level for bootstrap confidence bands
+#' @param return.bias indicates whether to return bias associated with bootstrap mean value
+#' @return \code{lcl} lower \code{100(alpha/2)\%} bootstrap confidence limit
+#' @return \code{ccl} upper \code{100(1 - alpha/2)\%} bootstrap confidence limit
+#' @return \code{bias} provided if \code{output.bias = TRUE}
+#' @details Get bootstrap confidence bands for TCATA attribute citation rates or TDS attribute dominance rates.
+#' @export
+#' @encoding UTF-8
+#' @examples
+#' x <- ojtcata[ojtcata$samp == 1 & ojtcata$attribute == "Sweetness",  -c(1:4)]
+#' x.boot.ci <- bootstrap.band(x, boot = 99) # 99 is only for illustrative purposes
+#' x.boot.ci
+bootstrap.band <- function(X, boot = 999, alpha = 0.05, return.bias = FALSE){
+  tmp <- matrix(0, ncol = ncol(X), nrow = boot + 1)
+  for (i in 1:boot){
+    tmp[i, ] <- apply(X[sample(1:nrow(X), nrow(X), replace = TRUE), ], 2, mean)
+  }
+  tmp[boot + 1, ] <- apply(X, 2, mean) # last row is real data
+  out <- data.frame(bias = apply(tmp, 2, mean) - apply(X, 2, mean), lcl = 0, ucl = 0)
+  out[, 2:3] <- t(apply(tmp, 2, stats::quantile, probs = c(alpha/2, 1 - alpha/2))) # naive bands
+  if(return.bias){
+    return(list(lcl = out$lcl, ucl = out$ucl, bias = out$bias))
+  } else {
+    return(list(lcl = out$lcl, ucl = out$ucl))
+  }
+}
+
