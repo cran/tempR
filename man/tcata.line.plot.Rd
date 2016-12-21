@@ -10,8 +10,8 @@ emphasis = NA, emphasis.lty = 1, emphasis.lwd = 3, declutter = NA,
 chance.lty = 3, reference = NA, ref.lty = 2, ref.lwd = 1,
 highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
 height = 8, width = 12, main = "",
-xlab = "Time", ylab = "Citation proportion", xlim = c(),
-line.col = c(), x.increment = 5, legend.cex = 1, legend.pos = "topleft",
+xlab = "Time", ylab = "Citation proportion", xlim = c(), las = 0,
+line.col = c(), x.increment = 5, legend.cex = 1, legend.pos = "topleft", box = FALSE,
 save.format = "", save.as = "" )
 }
 \arguments{
@@ -61,6 +61,8 @@ save.format = "", save.as = "" )
 
 \item{xlim}{Permits control of the x limit. Limits can be specified using a vector of 2 (ascending) numbers.}
 
+\item{las}{numeric in {0,1,2,3}; the style of the axis labels. See: \code{\link[graphics]{par}}.}
+
 \item{line.col}{A vector of colors for lines corresponding to rows of \code{X}.}
 
 \item{x.increment}{Specifies the interval between times when labelling the x axis.}
@@ -68,6 +70,8 @@ save.format = "", save.as = "" )
 \item{legend.cex}{Used to identify the size of markers shown in the legend..}
 
 \item{legend.pos}{Indicates the location of the legend in the plot. Defaults to \code{"topleft"}.}
+
+\item{box}{draw box around plot area; see: \code{\link[graphics]{box}}}
 
 \item{save.format}{If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).}
 

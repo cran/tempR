@@ -239,8 +239,8 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' chance.lty = 3, reference = NA, ref.lty = 2, ref.lwd = 1,
 #' highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
 #' height = 8, width = 12, main = "",
-#' xlab = "Time", ylab = "Citation proportion", xlim = c(),
-#' line.col = c(), x.increment = 5, legend.cex = 1, legend.pos = "topleft",
+#' xlab = "Time", ylab = "Citation proportion", xlim = c(), las = 0,
+#' line.col = c(), x.increment = 5, legend.cex = 1, legend.pos = "topleft", box = FALSE,
 #' save.format = "", save.as = "" )
 #' @param X matrix of proportions (or, if there is no missing data, on counts), typically with Attributes in rows and times in columns.
 #' @param n The number of observations if \code{X} is a count matrix. Keep \code{n = 1} if \code{X} is a matrix of proportions.
@@ -265,10 +265,12 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' @param xlab Label for the x axis.
 #' @param ylab Label for the y axis.
 #' @param xlim Permits control of the x limit. Limits can be specified using a vector of 2 (ascending) numbers.
+#' @param las numeric in {0,1,2,3}; the style of the axis labels. See: \code{\link[graphics]{par}}.
 #' @param line.col A vector of colors for lines corresponding to rows of \code{X}.
 #' @param x.increment Specifies the interval between times when labelling the x axis.
 #' @param legend.cex Used to identify the size of markers shown in the legend..
 #' @param legend.pos Indicates the location of the legend in the plot. Defaults to \code{"topleft"}.
+#' @param box draw box around plot area; see: \code{\link[graphics]{box}}
 #' @param save.format If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).
 #' @param save.as Filename if the file will be saved.
 #' @export
@@ -308,8 +310,9 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
                             reference = NA, ref.lty = 2, ref.lwd = 1,
                             highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
                             height = 8, width = 12, main = "",
-                            xlab = "Time", ylab = "Citation proportion", xlim = c(),
-                            line.col = c(), x.increment = 5, legend.cex = 1, legend.pos = "topleft",
+                            xlab = "Time", ylab = "Citation proportion",
+                            xlim = c(), las = 0, line.col = c(), x.increment = 5,
+                            legend.cex = 1, legend.pos = "topleft", box = FALSE,
                             save.format = "eps", save.as = "" ){
   # mat will contain proportions
   requireNamespace("grDevices", quietly = TRUE)
@@ -317,7 +320,7 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
   if (length(attributes) == 0 ) attributes <- rownames(X)
   if (length(times) == 0 ) times <- as.numeric(colnames(X))
   if (length(line.col) == 0 ) line.col <- pretty_palette(length(attributes))
-  if (length(highlight.col) == 0 ) highlight.col <- pretty_palette(length(attributes))
+  if (length(highlight.col) == 0 ) highlight.col <- make.palettes(length(attributes))$pal.light
 
   X <- X/n
   grDevices::dev.new(height = height, width = width)
@@ -341,7 +344,7 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
 
     graphics::plot(x = c(start.time, end.time), y = c(0,1), xlim = xlim, ylim = c(0,1),
          xlab = xlab, ylab = ylab, type = "n", axes = F, main = main)
-    graphics::axis(1, at = xlim.at)
+    graphics::axis(1, labels = xlim.at, at = xlim.at)
     graphics::axis(2)
 
     if (!any(is.na(reference))) {
@@ -380,6 +383,8 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
       graphics::lines(x = times, y = X[a,], xlim = c(start.time, end.time), col = line.col[a], lwd = lwd)
     }
     graphics::legend(legend.pos, legend = attributes, bty = "n", ncol = 2, text.col = line.col, text.font = 3, cex = legend.cex)
+
+    if (box) graphics::box()
 
     if(save.format[gg] == "png" & save.as[gg] != "") grDevices::savePlot(save.as[gg], type = "png")
     if(save.format[gg] == "eps" & save.as[gg] != "") grDevices::dev.off()
@@ -741,6 +746,7 @@ make.palettes <- function(n){
 #' @seealso \code{\link[stats]{prcomp}}, \code{\link[graphics]{par}}
 #' @encoding UTF-8
 #' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J. C., Baker, A. K., & Ross, C. F. (2016). Using contrails and animated sequences to visualize uncertainty in dynamic sensory profiles obtained from temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 54, 90-100. \url{http://dx.doi.org/10.1016/j.foodqual.2016.06.011}
 #' @examples
 #' # example using 'syrah' data set
 #' syrah.pca <- prcomp(syrah[1:248, -c(1:4)], scale. = FALSE)
@@ -750,6 +756,20 @@ make.palettes <- function(n){
 #' # now with smoothing; may need to play with the span parameter to get appropriate smoothing
 #' plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
 #'                       attributes = colnames(syrah)[-c(1:4)], type = "smooth", span = 0.3)
+#'
+#' # plots at each time point (trajectories join 2 points so start at timepoint 2, i.e., 11 s)
+#' x <- 11:14 # for brevity show only the first 4 timeslices
+#' # x <- 11:41 # uncomment this line to to run a longer demo
+#' pca.list <- list()
+#' for(i in seq_along(x)){
+#'   pca.list[[x[i]-10]] <- syrah.pca
+#'   pca.list[[x[i]-10]]$x <- pca.list[[x[i]-10]]$x[1:((x[i]-9)*6), ]
+#'   plot_pca.trajectories(pca.list[[x[i]-10]], products.times = syrah[1:((x[i]-9)*6), c(1, 4)],
+#'                         attributes = colnames(syrah)[-c(1:4)], type = "raw", inflate.factor = 1.5)
+#'   Sys.sleep(3/4)
+#'   # save plot if saving stills for a video; see Castura, Baker, & Ross (2016, Video 1)
+#' }
+#'
 plot_pca.trajectories <- function( in.pca = in.pca,
                                    products.times = matrix(NA),
                                    attributes = c(),

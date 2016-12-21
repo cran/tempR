@@ -6,8 +6,8 @@
 \title{Plot TDS curves}
 \usage{
 tds.plot(X, attributes = NULL, times = NULL, chance = NULL, signif = NULL,
- line.col = 1, lty = 1, lwd = 1, xlab = "Time (seconds)", ylab = "Dominance (rate)",
- main = "", height = 8, width = 12, save.as = "")
+ line.col = 1, lty = 1, lwd = 1, las = 0, xlab = "Time (seconds)",
+ ylab = "Dominance rate", main = "", height = 8, width = 12, box = FALSE, save.as = "")
 }
 \arguments{
 \item{X}{matrix of dominance rates (Attributes in rows, Times in columns).}
@@ -24,6 +24,8 @@ tds.plot(X, attributes = NULL, times = NULL, chance = NULL, signif = NULL,
 
 \item{lty, lwd}{line type and weight for attributes; see \code{\link[graphics]{par}}}
 
+\item{las}{numeric in {0,1,2,3}; the style of the axis labels. See: \code{\link[graphics]{par}}}
+
 \item{xlab, ylab}{Labels for the x and y axes; see \code{\link[graphics]{plot}}}
 
 \item{main}{plot title; see \code{\link[graphics]{plot}}}
@@ -31,6 +33,8 @@ tds.plot(X, attributes = NULL, times = NULL, chance = NULL, signif = NULL,
 \item{height}{Window height.}
 
 \item{width}{Window width.}
+
+\item{box}{draw box around plot area; see: \code{\link[graphics]{box}}}
 
 \item{save.as}{Filename if the file will be saved.}
 }

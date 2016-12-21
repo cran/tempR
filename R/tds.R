@@ -4,8 +4,8 @@
 #' @name tds.plot
 #' @aliases tds.plot
 #' @usage tds.plot(X, attributes = NULL, times = NULL, chance = NULL, signif = NULL,
-#'  line.col = 1, lty = 1, lwd = 1, xlab = "Time (seconds)", ylab = "Dominance (rate)",
-#'  main = "", height = 8, width = 12, save.as = "")
+#'  line.col = 1, lty = 1, lwd = 1, las = 0, xlab = "Time (seconds)",
+#'  ylab = "Dominance rate", main = "", height = 8, width = 12, box = FALSE, save.as = "")
 #' @param X matrix of dominance rates (Attributes in rows, Times in columns).
 #' @param attributes a vector of attribute labels, corresponding to the attributes in \code{X}.
 #' @param times a vector of times, corresponding to the times in \code{X}.
@@ -15,8 +15,10 @@
 #' @param xlab,ylab Labels for the x and y axes; see \code{\link[graphics]{plot}}
 #' @param line.col A vector of colors for lines corresponding to \code{attributes}; see \code{\link[graphics]{par}}
 #' @param lty,lwd line type and weight for attributes; see \code{\link[graphics]{par}}
+#' @param las numeric in {0,1,2,3}; the style of the axis labels. See: \code{\link[graphics]{par}}
 #' @param height Window height.
 #' @param width Window width.
+#' @param box draw box around plot area; see: \code{\link[graphics]{box}}
 #' @param save.as Filename if the file will be saved.
 #' @export
 #' @encoding UTF-8
@@ -33,9 +35,9 @@
 #'          times = times, chance = chance, signif = signif,
 #'          lwd = 2, main = "Bar 1")
 tds.plot <- function(X, attributes = NULL, times = NULL, chance = NULL,
-                     signif = NULL, line.col = 1, lty = 1, lwd = 1,
-                     xlab = "Time (seconds)", ylab = "Dominance (rate)",
-                     main = "", height = 8, width = 12, save.as = "") {
+                     signif = NULL, line.col = 1, lty = 1, lwd = 1, las = 0,
+                     xlab = "Time (seconds)", ylab = "Dominance rate",
+                     main = "", height = 8, width = 12, box = FALSE, save.as = "") {
   requireNamespace("graphics", quietly = TRUE)
   requireNamespace("grDevices", quietly = TRUE)
   if (any(is.na(times))) {
@@ -59,8 +61,9 @@ tds.plot <- function(X, attributes = NULL, times = NULL, chance = NULL,
   # basic plot area
 
   graphics::plot(c(first.time, last.time), c(0, 1), type = "n", xlab = xlab,
-       ylab = ylab, las = 1, main = main)
-
+       ylab = ylab, las = 1, axes = FALSE, main = main)
+  graphics::axis(1)
+  graphics::axis(2)
   # chance and significance lines
   x.namesel.offset <- 4
   if (!is.na(chance) & !is.na(signif)) {
@@ -87,10 +90,11 @@ tds.plot <- function(X, attributes = NULL, times = NULL, chance = NULL,
     graphics::lines(x = times, y = X[att, ], col = line.col[att], lty = lty,
           lwd = lwd)
   }
-  graphics::box()
   graphics::legend(x = "topright", legend = attributes,
          text.col = line.col, ncol = ceiling(length(attributes)/6),
-         text.font = 3, bty = "n")#lty = lty,  lwd = lwd,
+         text.font = 3, bty = "n")
+
+  if (box) graphics::box()
 
   if(save.as != "") grDevices::dev.off()
 }
@@ -321,7 +325,7 @@ get.significance.diff <- function(x, y, alpha = 0.05) {
 #' tds.diff.plot(diff.1vs2, times = times, attributes = attributes,
 #'                 lwd = 2, main = "TDS Differences (Bar 1 - Bar 2)")
 tds.diff.plot <- function(X, times = NULL, attributes = NULL,
-                          xlab = "Time (seconds)", ylab = "Dominance (rate)",
+                          xlab = "Time (seconds)", ylab = "Dominance rate",
                           line.col = 1, lty = 1, lwd = 1, main = "") {
   requireNamespace("graphics", quietly = TRUE)
   if (any(is.na(times))) {
@@ -424,6 +428,7 @@ std.time <- function(X, trim.left = TRUE, trim.right = TRUE, scale = TRUE, missi
     it <- nrow(X)
     out <- X
     if (all(is.na(X))) return (data.frame(matrix(NA, nrow = it, ncol = 101)))
+    if (sum(X) == 0) return (data.frame(matrix(0, nrow = it, ncol = 101)))
   }
   col.y <- ncol(X)
 
@@ -438,7 +443,7 @@ std.time <- function(X, trim.left = TRUE, trim.right = TRUE, scale = TRUE, missi
     ind.keep.start <- min(which(out.tot != missing))
     ind.keep.stop <- max(which(out.tot != missing))
   }
-  out <- out[ , ind.keep.start:ind.keep.stop]
+  out <- as.matrix(out[ , ind.keep.start:ind.keep.stop], ncol = length(ind.keep.start:ind.keep.stop))
   if (it == 1) out <- matrix(out, nrow = it)
   col.out <- ncol(out)
   if (scale) {

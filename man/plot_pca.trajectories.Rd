@@ -93,9 +93,25 @@ plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
 # now with smoothing; may need to play with the span parameter to get appropriate smoothing
 plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
                       attributes = colnames(syrah)[-c(1:4)], type = "smooth", span = 0.3)
+
+# plots at each time point (trajectories join 2 points so start at timepoint 2, i.e., 11 s)
+x <- 11:14 # for brevity show only the first 4 timeslices
+# x <- 11:41 # uncomment this line to to run a longer demo
+pca.list <- list()
+for(i in seq_along(x)){
+  pca.list[[x[i]-10]] <- syrah.pca
+  pca.list[[x[i]-10]]$x <- pca.list[[x[i]-10]]$x[1:((x[i]-9)*6), ]
+  plot_pca.trajectories(pca.list[[x[i]-10]], products.times = syrah[1:((x[i]-9)*6), c(1, 4)],
+                        attributes = colnames(syrah)[-c(1:4)], type = "raw", inflate.factor = 1.5)
+  Sys.sleep(3/4)
+  # save plot if saving stills for a video; see Castura, Baker, & Ross (2016, Video 1)
+}
+
 }
 \references{
 Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+
+Castura, J. C., Baker, A. K., & Ross, C. F. (2016). Using contrails and animated sequences to visualize uncertainty in dynamic sensory profiles obtained from temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 54, 90-100. \url{http://dx.doi.org/10.1016/j.foodqual.2016.06.011}
 }
 \seealso{
 \code{\link[stats]{prcomp}}, \code{\link[graphics]{par}}
