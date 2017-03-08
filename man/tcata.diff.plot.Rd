@@ -7,7 +7,7 @@
 \usage{
 tcata.diff.plot(x1 = x1, x2 = NA, n1 = 1, n2 = NA,
 attributes = c(), times = c(), lwd = 1,
-declutter = NA, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
+declutter = NA, get.decluttered = FALSE, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
 main = "", height = 8, width = 12,
 xlab = "Time", ylab = "Difference in citation proportion",
 line.col = c(), x.increment = 5, legend.cex = 1, save.as = "")
@@ -28,6 +28,8 @@ line.col = c(), x.increment = 5, legend.cex = 1, save.as = "")
 \item{lwd}{Line width}
 
 \item{declutter}{indicator matrix with same dimensions of \code{x1} to suppress output}
+
+\item{get.decluttered}{if \code{TRUE} then calculates the \code{declutter}  matrix from \code{get.mat.diff.sign}}
 
 \item{emphasis}{set to \code{1} to emphasize significant differences}
 
@@ -62,10 +64,18 @@ x.diff.raw <- t(syrah[seq(1, 1026, by = 6), -c(1:4)]) -
                 t(syrah[seq(3, 1026, by = 6), -c(1:4)])
 x.diff.smooth <- get.smooth(x.diff.raw, low.bound = -1, up.bound = 1)
 colnames(x.diff.smooth) <- colnames(x.diff.raw) <- times <- 10:180
-tcata.diff.plot(x.diff.smooth, attributes = rownames(x.diff.smooth), times = times, lwd = 2,
+tcata.diff.plot(x1 = x.diff.smooth, attributes = rownames(x.diff.smooth), times = times, lwd = 2,
                 main = "Sip 1 differences: High-ethanol wine - Low-ethanol wine")
+
+# an example based on the syrah data set (truncated for efficiency)
+n <- 52
+H1 <- t(syrah[seq(1, 126, by = 6), -c(1:4)] * n)
+L1 <- t(syrah[seq(3, 126, by = 6), -c(1:4)] * n)
+colnames(H1) <- colnames(L1) <- times <- 10:30
+tcata.diff.plot(x1 = H1, x2 = L1, n1 = n, n2 = n,
+                attributes = rownames(H1), get.decluttered = TRUE, lwd = 2)
 }
 \references{
-Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 }
 

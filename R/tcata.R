@@ -12,7 +12,7 @@
 #' @return out smoothed vector (or data frame with smoothed rows)
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @seealso \code{\link[stats]{smooth.spline}}, \code{\link[stats]{predict}}
 #' @examples
 #' # example using 'syrah' data set
@@ -197,7 +197,7 @@ adjust.brightness <- function(rgb.in, percent = 10) {
 #' @return declutter vector in which \code{1} indicates "show" and \code{NA} indicates "hide"
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @seealso \code{\link[stats]{fisher.test}}
 #' @examples
 #' # example using 'ojtcata' data set
@@ -275,7 +275,7 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' @param save.as Filename if the file will be saved.
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #' # example using 'syrah' data set
 #' low1 <- t(syrah[seq(3, 1026, by = 6), -c(1:4)])
@@ -405,7 +405,7 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
 #' @aliases get.mat.diff.sign
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #' # Toy TCATA citations data for two samples: s1, s2
 #' s1 <- t(data.frame(sweet =  c(10, 23, 25, 26, 26, 43, 44),
@@ -439,7 +439,7 @@ get.mat.diff.sign <- function(x = x, y = y, n.x = n.x, n.y = n.x, test.type = "f
 #' @aliases tcata.diff.plot
 #' @usage tcata.diff.plot(x1 = x1, x2 = NA, n1 = 1, n2 = NA,
 #' attributes = c(), times = c(), lwd = 1,
-#' declutter = NA, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
+#' declutter = NA, get.decluttered = FALSE, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
 #' main = "", height = 8, width = 12,
 #' xlab = "Time", ylab = "Difference in citation proportion",
 #' line.col = c(), x.increment = 5, legend.cex = 1, save.as = "")
@@ -451,6 +451,7 @@ get.mat.diff.sign <- function(x = x, y = y, n.x = n.x, n.y = n.x, test.type = "f
 #' @param times vector of times for columns in \code{x1} (and \code{x2})
 #' @param lwd Line width
 #' @param declutter indicator matrix with same dimensions of \code{x1} to suppress output
+#' @param get.decluttered if \code{TRUE} then calculates the \code{declutter}  matrix from \code{get.mat.diff.sign}
 #' @param emphasis set to \code{1} to emphasize significant differences
 #' @param alpha significance level to use for entrywise test of \code{x1} and \code{x2} (if counts)
 #' @param emphasis.lwd line weight for emphasizing significant differences
@@ -465,17 +466,25 @@ get.mat.diff.sign <- function(x = x, y = y, n.x = n.x, n.y = n.x, test.type = "f
 #' @param save.as Filename to use if file will be saved.
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #' # difference between High and Low ethanol wines (sip 1)
 #' x.diff.raw <- t(syrah[seq(1, 1026, by = 6), -c(1:4)]) -
 #'                 t(syrah[seq(3, 1026, by = 6), -c(1:4)])
 #' x.diff.smooth <- get.smooth(x.diff.raw, low.bound = -1, up.bound = 1)
 #' colnames(x.diff.smooth) <- colnames(x.diff.raw) <- times <- 10:180
-#' tcata.diff.plot(x.diff.smooth, attributes = rownames(x.diff.smooth), times = times, lwd = 2,
+#' tcata.diff.plot(x1 = x.diff.smooth, attributes = rownames(x.diff.smooth), times = times, lwd = 2,
 #'                 main = "Sip 1 differences: High-ethanol wine - Low-ethanol wine")
+#'
+#' # an example based on the syrah data set (truncated for efficiency)
+#' n <- 52
+#' H1 <- t(syrah[seq(1, 126, by = 6), -c(1:4)] * n)
+#' L1 <- t(syrah[seq(3, 126, by = 6), -c(1:4)] * n)
+#' colnames(H1) <- colnames(L1) <- times <- 10:30
+#' tcata.diff.plot(x1 = H1, x2 = L1, n1 = n, n2 = n,
+#'                 attributes = rownames(H1), get.decluttered = TRUE, lwd = 2)
 tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(), times = c(), lwd = 1,
-                            declutter = NA, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
+                            declutter = NA, get.decluttered = FALSE, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
                             main = "", height = 8, width = 12,
                             xlab = "Time", ylab = "Difference in citation proportion",
                             line.col = c(),
@@ -495,10 +504,16 @@ tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(),
     line.col <- pretty_palette(length(attributes))
   }
 
-  if (!all(is.na(x2))){
+  if (!all(is.na(c(x2, n2)))){
     # two matrices are provided - get the differences
-    mat.diff <- (x1 - x2) / sum(n1, n2, na.rm = TRUE)
-    mat.diff.sign <- get.mat.diff.sign(x1, x2, n1, n2)  # this could be updated to correspond with "emphasis" that can be passed in
+    mat.diff <- (x1/n1) - (x2/n2)
+    if(get.decluttered){
+      # override any declutter matrix that was supplied
+      mat.diff.sign <- get.mat.diff.sign(x1, x2, n1, n2)
+      mat.diff.sign[mat.diff.sign > alpha] <- NA # hide values that are nsd
+      mat.diff.sign[!is.na(mat.diff.sign)] <- 1
+      colnames(mat.diff.sign) <- colnames(mat.diff)
+    }
   } else {
     # only one matrix of differences
     mat.diff <- x1 / n1
@@ -516,15 +531,51 @@ tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(),
   graphics::axis(1, at = seq(from = min(as.numeric(colnames(x1))), to = max(as.numeric(colnames(x1))), by = x.increment))
   graphics::axis(2)
   graphics::abline(h = 0, col = "grey33", lty = 3)
-  for (a in seq_along(attributes)){
-    graphics::lines(x = times, y = mat.diff[a,], lwd = lwd, col = line.col[a])
+  if(all(dim(x1) == dim(x2)) & !(all(is.na(x2)))){
+    if((get.decluttered || !all(is.na(mat.diff.sign)))){
+      if(all(dim(mat.diff) == dim(mat.diff.sign))){
+        # declutter the plot
+        for (a in seq_along(attributes)){
+          for (t in 1:ncol(mat.diff.sign)){
+            continue <- FALSE
+            start.x <- stop.x <- NA
+            if(!is.na(mat.diff.sign[a, t])){
+              if(t == 1) continue <- TRUE
+              if(continue==FALSE){
+                if(is.na(mat.diff.sign[a, t - 1])) continue <- TRUE
+              }
+              if(continue){
+                start.x <- t
+                findnext0 <- which(is.na(mat.diff.sign[a,min(start.x+1,length(colnames(mat.diff.sign))):length(colnames(mat.diff.sign))]))
+                # use the first time that is non-significant, or the last time
+                stop.x <- ifelse(sum(findnext0*1)==0, length(colnames(mat.diff.sign)), findnext0[1] - 1 + start.x)
+                #if (sum(findnext0*1)==0) {
+                #  stop.x <- length(colnames(mat.diff.sign.out)) # all significant;
+                #} else {
+                #  stop.x <- findnext0[1] - 1 + start.x # take the first time that is non-significant
+                #}
+                y.start.x <- start.x
+                y.stop.x <- stop.x
+                graphics::lines(x = as.numeric(colnames(mat.diff)[start.x:stop.x]), y = mat.diff[a, c(y.start.x:y.stop.x)], col = line.col[a], lwd = lwd)
+              }
+            }
+          }
+        }
+      }
+    }
+  } else {
+    for (a in seq_along(attributes)){
+      graphics::lines(x = times, y = mat.diff[a,], lwd = lwd, col = line.col[a])
+    }
   }
   if(!any(is.na(emphasis))){
     if (!is.na(nrow(emphasis))) {
       if (nrow(emphasis) == length(attributes)){
         # emphasize significant differences
+        mat.diff.sign <- get.mat.diff.sign(x1, x2, n1, n2)
+        mat.diff.sign[mat.diff.sign > alpha] <- NA # hide values that are nsd
+        colnames(mat.diff.sign) <- colnames(mat.diff)
         mat.diff.sign.out <- mat.diff.sign
-        mat.diff.sign.out[mat.diff.sign.out > alpha] <- NA
 
         for (a in seq_along(attributes)){
           for (t in seq_along(colnames(mat.diff.sign.out))){
@@ -547,7 +598,7 @@ tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(),
                 #}
                 y.start.x <- start.x
                 y.stop.x <- stop.x
-                graphics::lines(x = as.numeric(colnames(mat.diff[start.x:stop.x])), y = mat.diff[a,c(y.start.x:y.stop.x)], col = line.col[a], lwd = emphasis.lwd)
+                graphics::lines(x = as.numeric(colnames(mat.diff)[start.x:stop.x]), y = mat.diff[a, c(y.start.x:y.stop.x)], col = line.col[a], lwd = emphasis.lwd)
               }
             }
           }
@@ -555,11 +606,9 @@ tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(),
       }
     }
   }
-  graphics::legend("topleft", legend = attributes, text.col = line.col, bty = "n", ncol = 2, text.font = 3, cex = legend.cex)
-
+  graphics::legend("topright", legend = attributes, text.col = line.col, bty = "n", ncol = 2, text.font = 3, cex = legend.cex)
   if (save.as != "") grDevices::dev.off()
 }
-
 
 #' Convert TCATA data
 #'
@@ -745,7 +794,7 @@ make.palettes <- function(n){
 #' @export
 #' @seealso \code{\link[stats]{prcomp}}, \code{\link[graphics]{par}}
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @references Castura, J. C., Baker, A. K., & Ross, C. F. (2016). Using contrails and animated sequences to visualize uncertainty in dynamic sensory profiles obtained from temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 54, 90-100. \url{http://dx.doi.org/10.1016/j.foodqual.2016.06.011}
 #' @examples
 #' # example using 'syrah' data set
@@ -1016,7 +1065,7 @@ dist.city.block <- function (x, y) {
 #' @details Similarity between one TCATA assessor and other assessors on the panel is quantified. The replication index can take on values between \code{0} and \code{1}, which indicate complete dissimilarity (disagreement) and complete similarity (agreement), respectively.
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #'   # Toy TCATA data for three assessors: a1, a2, a3
 #'   a1 <- rbind(rep(0, 7),
@@ -1060,7 +1109,7 @@ similarity.tcata.replication <- function(this.assessor, other.assessors){
 #' @details Similarity between repeated evaluations given by a TCATA assessor is quantified. The repeatability index can take on values between \code{0} and \code{1}, which indicate complete dissimilarity (non-repeatability) and complete similarity (repeatability), respectively.
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal Check-All-That-Apply (TCATA): A Novel Temporal Sensory Method for Characterizing Products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #'   # Toy data from one TCATA assessor on a product over three sessions: rep1, rep2, rep3
 #'   rep1 <- rbind(rep(0, 7),

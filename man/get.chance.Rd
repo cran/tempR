@@ -22,6 +22,6 @@ chance <- get.chance(attributes)
 chance
 }
 \references{
-Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal Dominance of Sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
+Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
 }
 
