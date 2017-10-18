@@ -32,4 +32,3 @@ fill.gaps(x, subst = NA)
                 .Dimnames = list(1:3, 1:10)))
 fill.gaps(y)
 }
-

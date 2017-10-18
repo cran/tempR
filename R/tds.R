@@ -34,6 +34,13 @@
 #' tds.plot(get.smooth(bars.m[bars.m$sample == 1, -c(1:2)]), attributes = attributes,
 #'          times = times, chance = chance, signif = signif,
 #'          lwd = 2, main = "Bar 1")
+#'
+#' # it is possible to hide the portion of the plot below the significance line:
+#' rect(-2, -0.2, times[length(times)]+2, signif, col = "white", border = "transparent")
+#' # re-add axes & significance line
+#' axis(1, labels = seq(0, 45, by = 5), at = seq(0, 45, by = 5))
+#' axis(2)
+#' abline(h=signif, lty=3, col = "grey")
 tds.plot <- function(X, attributes = NULL, times = NULL, chance = NULL,
                      signif = NULL, line.col = 1, lty = 1, lwd = 1, las = 0,
                      xlab = "Time (seconds)", ylab = "Dominance rate",
@@ -324,6 +331,31 @@ get.significance.diff <- function(x, y, alpha = 0.05) {
 #' diff.1vs2 <- get.smooth(bar1 - bar2, low.bound = -1, up.bound = 1)
 #' tds.diff.plot(diff.1vs2, times = times, attributes = attributes,
 #'                 lwd = 2, main = "TDS Differences (Bar 1 - Bar 2)")
+#'
+#' # suppose we only want to show the curves where the difference in dominance rate
+#' # is significantly different
+#' # get samples sizes and dominance counts for each product
+#' bars.s <- aggregate(bars[, -c(1:4)], list(samples = bars$sample, attribute = bars$attribute), sum)
+#' bars.s <- bars.s[order(bars.s$sample, bars.s$attribute), ]
+#' bar1.s <- bars.s[bars.s$sample == 1, -c(1:2)]
+#' bar2.s <- bars.s[bars.s$sample == 2, -c(1:2)]
+#' bar1.n <- nrow(unique(bars[bars$sample == 1, 1:2]))
+#' bar2.n <- nrow(unique(bars[bars$sample == 2, 1:2]))
+#'
+#' # prop.test2 is a wrapper for prop.test (with its default parameters)
+#' # thus it will run chi-squared test with Yates continuity correction
+#' prop.test2 <-  function(x1, x2, n1, n2, alpha = 0.05){
+#'   return((suppressWarnings(prop.test(c(x1,x2), c(n1, n2),
+#'           alternative = "two.sided"))$p.value < alpha) %in% TRUE)
+#' }
+#' # find significant pairwise comparison, treating data as if independent
+#' diff_1v2.signif <- mapply(prop.test2, unlist(bar1.s), unlist(bar2.s), bar1.n, bar2.n)
+#' # update smoothed difference matrix with NA where non-significant pairs
+#' diff_1v2.signif[!diff_1v2.signif] <- NA
+#' diff.1vs2 <- diff.1vs2 + diff_1v2.signif - 1
+#' # line segments that are non-significant are missing/NA so not plotted
+#' tds.diff.plot(diff.1vs2, times = times, attributes = attributes,
+#'               lwd = 2, main = "TDS Differences (Bar 1 - Bar 2)")
 tds.diff.plot <- function(X, times = NULL, attributes = NULL,
                           xlab = "Time (seconds)", ylab = "Dominance rate",
                           line.col = 1, lty = 1, lwd = 1, main = "") {

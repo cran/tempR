@@ -21,4 +21,3 @@ Make a vector of n pretty colours, and n matching highlight colours.
 \examples{
 make.palettes(8)
 }
-

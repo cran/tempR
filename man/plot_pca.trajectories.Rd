@@ -116,4 +116,3 @@ Castura, J. C., Baker, A. K., & Ross, C. F. (2016). Using contrails and animated
 \seealso{
 \code{\link[stats]{prcomp}}, \code{\link[graphics]{par}}
 }
-

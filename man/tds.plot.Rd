@@ -52,8 +52,14 @@ signif <- get.significance(chance, nrow(unique(bars[, 1:2])))
 tds.plot(get.smooth(bars.m[bars.m$sample == 1, -c(1:2)]), attributes = attributes,
          times = times, chance = chance, signif = signif,
          lwd = 2, main = "Bar 1")
+
+# it is possible to hide the portion of the plot below the significance line:
+rect(-2, -0.2, times[length(times)]+2, signif, col = "white", border = "transparent")
+# re-add axes & significance line
+axis(1, labels = seq(0, 45, by = 5), at = seq(0, 45, by = 5))
+axis(2)
+abline(h=signif, lty=3, col = "grey")
 }
 \references{
 Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
 }
-

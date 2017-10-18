@@ -64,4 +64,3 @@ head(bar1.std)
 \references{
 Lenfant, F., Loret, C., Pineau, N., Hartmann, C., & Martin, N. (2009). Perception of oral food breakdown. The concept of sensory trajectory. \emph{Appetite}, 52, 659-667.
 }
-

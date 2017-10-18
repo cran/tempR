@@ -28,4 +28,3 @@ paste0(bars[1, -c(1:4)], collapse = "")
 count.selections(bars[1, -c(1:4)])
 count.selections(bars[1, -c(1:4)], deselections = TRUE)
 }
-

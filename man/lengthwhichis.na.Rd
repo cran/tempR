@@ -20,4 +20,3 @@ Count observations with missing data.
 x <- c(rep(NA,18), rep(1,18), rep(0,10), rep(NA, 10))
 lengthwhichis.na(x)
 }
-

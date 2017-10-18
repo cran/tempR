@@ -10,8 +10,8 @@ emphasis = NA, emphasis.lty = 1, emphasis.lwd = 3, declutter = NA,
 chance.lty = 3, reference = NA, ref.lty = 2, ref.lwd = 1,
 highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
 height = 8, width = 12, main = "",
-xlab = "Time", ylab = "Citation proportion", xlim = c(), las = 0,
-line.col = c(), x.increment = 5, legend.cex = 1, legend.pos = "topleft", box = FALSE,
+xlab = "Time", ylab = "Citation proportion", xlim = c(), las = 0, line.col = c(),
+x.increment = 5, legend.cex = 1, legend.pos = "topleft", legend.ncol = 2, box = FALSE,
 save.format = "", save.as = "" )
 }
 \arguments{
@@ -71,6 +71,8 @@ save.format = "", save.as = "" )
 
 \item{legend.pos}{Indicates the location of the legend in the plot. Defaults to \code{"topleft"}.}
 
+\item{legend.ncol}{Number of columns in legend.}
+
 \item{box}{draw box around plot area; see: \code{\link[graphics]{box}}}
 
 \item{save.format}{If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).}
@@ -112,4 +114,3 @@ tcata.line.plot(p.1.checked, n = p.1.eval, attributes = attributes, times = time
 \references{
 Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 }
-

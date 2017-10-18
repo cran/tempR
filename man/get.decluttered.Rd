@@ -46,4 +46,3 @@ Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-
 \seealso{
 \code{\link[stats]{fisher.test}}
 }
-

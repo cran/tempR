@@ -29,4 +29,3 @@ times <- seq(0, 25, by = 0.01)
 Xnew <- convert.tcategory(X, in.scores, times)
 Xnew
 }
-

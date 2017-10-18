@@ -26,4 +26,3 @@ Calculates the city block distance between two matrices.
   y <- matrix(c(rep(0, 15), rep(1, 20)), nrow = 5, ncol = 7)
   dist.city.block(x, y)
 }
-

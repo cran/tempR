@@ -19,4 +19,3 @@ Create a vector of n pretty colours.
 \examples{
 pretty_palette(8)
 }
-

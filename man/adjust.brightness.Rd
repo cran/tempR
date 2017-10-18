@@ -22,4 +22,3 @@ Select suitable colors for highlighting plots.
 (rgb.in <- c(col2rgb("red")))
 adjust.brightness(rgb.in, percent = 10)
 }
-

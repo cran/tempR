@@ -239,8 +239,8 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' chance.lty = 3, reference = NA, ref.lty = 2, ref.lwd = 1,
 #' highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
 #' height = 8, width = 12, main = "",
-#' xlab = "Time", ylab = "Citation proportion", xlim = c(), las = 0,
-#' line.col = c(), x.increment = 5, legend.cex = 1, legend.pos = "topleft", box = FALSE,
+#' xlab = "Time", ylab = "Citation proportion", xlim = c(), las = 0, line.col = c(),
+#' x.increment = 5, legend.cex = 1, legend.pos = "topleft", legend.ncol = 2, box = FALSE,
 #' save.format = "", save.as = "" )
 #' @param X matrix of proportions (or, if there is no missing data, on counts), typically with Attributes in rows and times in columns.
 #' @param n The number of observations if \code{X} is a count matrix. Keep \code{n = 1} if \code{X} is a matrix of proportions.
@@ -270,6 +270,7 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' @param x.increment Specifies the interval between times when labelling the x axis.
 #' @param legend.cex Used to identify the size of markers shown in the legend..
 #' @param legend.pos Indicates the location of the legend in the plot. Defaults to \code{"topleft"}.
+#' @param legend.ncol Number of columns in legend.
 #' @param box draw box around plot area; see: \code{\link[graphics]{box}}
 #' @param save.format If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).
 #' @param save.as Filename if the file will be saved.
@@ -312,7 +313,7 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
                             height = 8, width = 12, main = "",
                             xlab = "Time", ylab = "Citation proportion",
                             xlim = c(), las = 0, line.col = c(), x.increment = 5,
-                            legend.cex = 1, legend.pos = "topleft", box = FALSE,
+                            legend.cex = 1, legend.pos = "topleft", legend.ncol = 2, box = FALSE,
                             save.format = "eps", save.as = "" ){
   # mat will contain proportions
   requireNamespace("grDevices", quietly = TRUE)
@@ -382,7 +383,7 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
     for (a in seq_along(attributes)){
       graphics::lines(x = times, y = X[a,], xlim = c(start.time, end.time), col = line.col[a], lwd = lwd)
     }
-    graphics::legend(legend.pos, legend = attributes, bty = "n", ncol = 2, text.col = line.col, text.font = 3, cex = legend.cex)
+    graphics::legend(legend.pos, legend = attributes, bty = "n", ncol = legend.ncol, text.col = line.col, text.font = 3, cex = legend.cex)
 
     if (box) graphics::box()
 
