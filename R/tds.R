@@ -454,11 +454,11 @@ lengthwhichis.na <- function(x){
 std.time <- function(X, trim.left = TRUE, trim.right = TRUE, scale = TRUE, missing = 0) {
   if(is.vector(X)){
     it <- 1
-    if (all(is.na(X))) return (rep(NA, 101))
-    out <- matrix(X, nrow = it)
+    if (all(is.na(X))) return (data.frame(matrix(rep(NA, nrow = 1, ncol = 101))))
+    out <- data.frame(matrix(X, nrow = it))
   } else {
     it <- nrow(X)
-    out <- X
+    out <- data.frame(X, nrow = it)
     if (all(is.na(X))) return (data.frame(matrix(NA, nrow = it, ncol = 101)))
     if (sum(X) == 0) return (data.frame(matrix(0, nrow = it, ncol = 101)))
   }

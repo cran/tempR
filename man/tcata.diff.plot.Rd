@@ -10,7 +10,8 @@ attributes = c(), times = c(), lwd = 1,
 declutter = NA, get.decluttered = FALSE, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
 main = "", height = 8, width = 12,
 xlab = "Time", ylab = "Difference in citation proportion",
-line.col = c(), x.increment = 5, legend.cex = 1, save.as = "")
+axes.font = 1, axes.cex = 1, line.col = c(), x.increment = 5,
+legend.cex = 1, legend.font = 1, save.as = "")
 }
 \arguments{
 \item{x1}{matrix of difference proportions, or of counts if \code{n1} specified. If \code{mat2} specified then proportions or counts apply to first sample. Attributes are in rows, times in columns.}
@@ -47,11 +48,17 @@ line.col = c(), x.increment = 5, legend.cex = 1, save.as = "")
 
 \item{ylab}{label for y axis}
 
+\item{axes.font}{Font for axes labels; see \code{\link[graphics]{par}}.}
+
+\item{axes.cex}{Size for axes labels.}
+
 \item{line.col}{line color for attribute lines}
 
 \item{x.increment}{increment between time labels on x axis}
 
 \item{legend.cex}{symbol size for legend}
+
+\item{legend.font}{Font for the legend; see \code{\link[graphics]{text}}.}
 
 \item{save.as}{Filename to use if file will be saved.}
 }

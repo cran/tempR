@@ -10,8 +10,10 @@ emphasis = NA, emphasis.lty = 1, emphasis.lwd = 3, declutter = NA,
 chance.lty = 3, reference = NA, ref.lty = 2, ref.lwd = 1,
 highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
 height = 8, width = 12, main = "",
-xlab = "Time", ylab = "Citation proportion", xlim = c(), las = 0, line.col = c(),
-x.increment = 5, legend.cex = 1, legend.pos = "topleft", legend.ncol = 2, box = FALSE,
+xlab = "Time", ylab = "Citation proportion", axes.font = 1,
+axes.cex = 1, xlim = c(), las = 0, line.col = c(),
+x.increment = 5, legend.cex = 1, legend.font = 1,
+legend.pos = "topleft", legend.ncol = 2, box = FALSE,
 save.format = "", save.as = "" )
 }
 \arguments{
@@ -59,17 +61,23 @@ save.format = "", save.as = "" )
 
 \item{ylab}{Label for the y axis.}
 
+\item{axes.font}{Font for axes labels; see \code{\link[graphics]{par}}.}
+
+\item{axes.cex}{Size for axes labels.}
+
 \item{xlim}{Permits control of the x limit. Limits can be specified using a vector of 2 (ascending) numbers.}
 
-\item{las}{numeric in {0,1,2,3}; the style of the axis labels. See: \code{\link[graphics]{par}}.}
+\item{las}{numeric in {0,1,2,3}; the style of the axis labels. See \code{\link[graphics]{par}}.}
 
 \item{line.col}{A vector of colors for lines corresponding to rows of \code{X}.}
 
 \item{x.increment}{Specifies the interval between times when labelling the x axis.}
 
-\item{legend.cex}{Used to identify the size of markers shown in the legend..}
+\item{legend.cex}{Size of markers shown in the legend.}
 
-\item{legend.pos}{Indicates the location of the legend in the plot. Defaults to \code{"topleft"}.}
+\item{legend.font}{Font for the legend; see \code{\link[graphics]{text}}.}
+
+\item{legend.pos}{Location of the legend in the plot; defaults to \code{"topleft"}.}
 
 \item{legend.ncol}{Number of columns in legend.}
 

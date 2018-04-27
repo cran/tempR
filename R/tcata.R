@@ -239,8 +239,10 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' chance.lty = 3, reference = NA, ref.lty = 2, ref.lwd = 1,
 #' highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
 #' height = 8, width = 12, main = "",
-#' xlab = "Time", ylab = "Citation proportion", xlim = c(), las = 0, line.col = c(),
-#' x.increment = 5, legend.cex = 1, legend.pos = "topleft", legend.ncol = 2, box = FALSE,
+#' xlab = "Time", ylab = "Citation proportion", axes.font = 1,
+#' axes.cex = 1, xlim = c(), las = 0, line.col = c(),
+#' x.increment = 5, legend.cex = 1, legend.font = 1,
+#' legend.pos = "topleft", legend.ncol = 2, box = FALSE,
 #' save.format = "", save.as = "" )
 #' @param X matrix of proportions (or, if there is no missing data, on counts), typically with Attributes in rows and times in columns.
 #' @param n The number of observations if \code{X} is a count matrix. Keep \code{n = 1} if \code{X} is a matrix of proportions.
@@ -264,12 +266,15 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' @param main plot title; see \code{\link[graphics]{plot}}.
 #' @param xlab Label for the x axis.
 #' @param ylab Label for the y axis.
+#' @param axes.font Font for axes labels; see \code{\link[graphics]{par}}.
+#' @param axes.cex Size for axes labels.
 #' @param xlim Permits control of the x limit. Limits can be specified using a vector of 2 (ascending) numbers.
-#' @param las numeric in {0,1,2,3}; the style of the axis labels. See: \code{\link[graphics]{par}}.
+#' @param las numeric in {0,1,2,3}; the style of the axis labels. See \code{\link[graphics]{par}}.
 #' @param line.col A vector of colors for lines corresponding to rows of \code{X}.
 #' @param x.increment Specifies the interval between times when labelling the x axis.
-#' @param legend.cex Used to identify the size of markers shown in the legend..
-#' @param legend.pos Indicates the location of the legend in the plot. Defaults to \code{"topleft"}.
+#' @param legend.cex Size of markers shown in the legend.
+#' @param legend.font Font for the legend; see \code{\link[graphics]{text}}.
+#' @param legend.pos Location of the legend in the plot; defaults to \code{"topleft"}.
 #' @param legend.ncol Number of columns in legend.
 #' @param box draw box around plot area; see: \code{\link[graphics]{box}}
 #' @param save.format If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).
@@ -312,8 +317,9 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
                             highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
                             height = 8, width = 12, main = "",
                             xlab = "Time", ylab = "Citation proportion",
+                            axes.font = 1, axes.cex = 1,
                             xlim = c(), las = 0, line.col = c(), x.increment = 5,
-                            legend.cex = 1, legend.pos = "topleft", legend.ncol = 2, box = FALSE,
+                            legend.cex = 1, legend.font = 1, legend.pos = "topleft", legend.ncol = 2, box = FALSE,
                             save.format = "eps", save.as = "" ){
   # mat will contain proportions
   requireNamespace("grDevices", quietly = TRUE)
@@ -344,7 +350,7 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
     }
 
     graphics::plot(x = c(start.time, end.time), y = c(0,1), xlim = xlim, ylim = c(0,1),
-         xlab = xlab, ylab = ylab, type = "n", axes = F, main = main)
+         xlab = xlab, ylab = ylab, font.lab = axes.font, cex.lab = axes.cex, type = "n", axes = F, main = main)
     graphics::axis(1, labels = xlim.at, at = xlim.at)
     graphics::axis(2)
 
@@ -383,7 +389,7 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
     for (a in seq_along(attributes)){
       graphics::lines(x = times, y = X[a,], xlim = c(start.time, end.time), col = line.col[a], lwd = lwd)
     }
-    graphics::legend(legend.pos, legend = attributes, bty = "n", ncol = legend.ncol, text.col = line.col, text.font = 3, cex = legend.cex)
+    graphics::legend(legend.pos, legend = attributes, bty = "n", ncol = legend.ncol, text.col = line.col, text.font = legend.font, cex = legend.cex)
 
     if (box) graphics::box()
 
@@ -398,8 +404,8 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
 #' @name get.mat.diff.sign
 #' @aliases get.mat.diff.sign
 #' @param x citations for product x
-#' @param n.x total observations for x
 #' @param y citations for product y
+#' @param n.x total observations for x
 #' @param n.y total observations for y
 #' @param test.type So far only Fisher's exact test is implemented (\code{"f"})
 #' @seealso \code{\link[stats]{fisher.test}}
@@ -421,13 +427,13 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
 #' signif
 get.mat.diff.sign <- function(x = x, y = y, n.x = n.x, n.y = n.x, test.type = "f"){
   requireNamespace("stats", quietly = TRUE)
-  x1 <- c(x)
-  y1 <- c(y)
+  x1 <- unlist(c(x))
+  y1 <- unlist(c(y))
   out.mat <- x * 0
   tmp <- data.frame(x1 = x1, x0 = c(n.x) - x1, y1 = y1, y0 = c(n.y) - y1)
-  fisher.test2 <- function(x){
+  fisher.test2 <- function(X){
     requireNamespace("stats", quietly = TRUE)
-    return(stats::fisher.test(matrix(x, nrow = 2))$p)
+    return(stats::fisher.test(matrix(X, nrow = 2))$p)
   }
   out.mat <- matrix(apply(tmp, 1, fisher.test2), nrow = nrow(as.matrix(x)), ncol = ncol(as.matrix(x)))
   return(out.mat)
@@ -443,7 +449,8 @@ get.mat.diff.sign <- function(x = x, y = y, n.x = n.x, n.y = n.x, test.type = "f
 #' declutter = NA, get.decluttered = FALSE, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
 #' main = "", height = 8, width = 12,
 #' xlab = "Time", ylab = "Difference in citation proportion",
-#' line.col = c(), x.increment = 5, legend.cex = 1, save.as = "")
+#' axes.font = 1, axes.cex = 1, line.col = c(), x.increment = 5,
+#' legend.cex = 1, legend.font = 1, save.as = "")
 #' @param x1 matrix of difference proportions, or of counts if \code{n1} specified. If \code{mat2} specified then proportions or counts apply to first sample. Attributes are in rows, times in columns.
 #' @param x2 matrix of proportions for second sample, or of counts if \code{n2} specified.
 #' @param n1 number of observations for first sample
@@ -461,8 +468,11 @@ get.mat.diff.sign <- function(x = x, y = y, n.x = n.x, n.y = n.x, test.type = "f
 #' @param width plot width
 #' @param xlab label for x axis
 #' @param ylab label for y axis
+#' @param axes.font Font for axes labels; see \code{\link[graphics]{par}}.
+#' @param axes.cex Size for axes labels.
 #' @param line.col line color for attribute lines
 #' @param legend.cex symbol size for legend
+#' @param legend.font Font for the legend; see \code{\link[graphics]{text}}.
 #' @param x.increment increment between time labels on x axis
 #' @param save.as Filename to use if file will be saved.
 #' @export
@@ -488,8 +498,8 @@ tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(),
                             declutter = NA, get.decluttered = FALSE, emphasis = NA, alpha = 0.05, emphasis.lwd = 3,
                             main = "", height = 8, width = 12,
                             xlab = "Time", ylab = "Difference in citation proportion",
-                            line.col = c(),
-                            x.increment = 5, legend.cex = 1,
+                            axes.font = 1, axes.cex = 1, line.col = c(),
+                            x.increment = 5, legend.cex = 1, legend.font = 1,
                             save.as = ""){
   requireNamespace("grDevices", quietly = TRUE)
   requireNamespace("graphics", quietly = TRUE)
@@ -504,7 +514,7 @@ tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(),
     requireNamespace("grDevices", quietly = TRUE)
     line.col <- pretty_palette(length(attributes))
   }
-
+  mat.diff.sign <- NA
   if (!all(is.na(c(x2, n2)))){
     # two matrices are provided - get the differences
     mat.diff <- (x1/n1) - (x2/n2)
@@ -528,7 +538,8 @@ tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(),
     grDevices::postscript(save.as)
   }
 
-  graphics::plot(x = c(start.time, end.time), y = c(-1, 1), axes = F, xlab = xlab, ylab = ylab, type = "n", main = main)
+  graphics::plot(x = c(start.time, end.time), y = c(-1, 1), axes = F, xlab = xlab, ylab = ylab,
+                 font.lab = axes.font, cex.lab = axes.cex, type = "n", main = main)
   graphics::axis(1, at = seq(from = min(as.numeric(colnames(x1))), to = max(as.numeric(colnames(x1))), by = x.increment))
   graphics::axis(2)
   graphics::abline(h = 0, col = "grey33", lty = 3)
@@ -607,7 +618,8 @@ tcata.diff.plot <- function(x1 = x1, x2 = NA, n1 = 1, n2 = NA, attributes = c(),
       }
     }
   }
-  graphics::legend("topright", legend = attributes, text.col = line.col, bty = "n", ncol = 2, text.font = 3, cex = legend.cex)
+  graphics::legend("topright", legend = attributes, text.col = line.col, bty = "n", ncol = 2, text.font = legend.font,
+                   cex = legend.cex)
   if (save.as != "") grDevices::dev.off()
 }
 
