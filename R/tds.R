@@ -456,9 +456,11 @@ std.time <- function(X, trim.left = TRUE, trim.right = TRUE, scale = TRUE, missi
     it <- 1
     if (all(is.na(X))) return (data.frame(matrix(rep(NA, nrow = 1, ncol = 101))))
     out <- data.frame(matrix(X, nrow = it))
-  } else {
+  }
+  if(is.matrix(X)) out <- as.data.frame(X)
+  if(is.data.frame(X)){
     it <- nrow(X)
-    out <- data.frame(X, nrow = it)
+    out <- X
     if (all(is.na(X))) return (data.frame(matrix(NA, nrow = it, ncol = 101)))
     if (sum(X) == 0) return (data.frame(matrix(0, nrow = it, ncol = 101)))
   }
@@ -483,11 +485,7 @@ std.time <- function(X, trim.left = TRUE, trim.right = TRUE, scale = TRUE, missi
     colnames(scale.out) <- 0:100
     rownames(scale.out) <- rownames(X)
     for (i in 1:101) {
-      if (i == 1){
-        scale.out[, 1] <- out[ , 1]
-      } else {
-        scale.out[, i] <- out[ , max(1, round(i * col.out/10100, 2)*100)]
-      }
+      scale.out[, i] <- out[ , min(101, max(1, round(i * col.out/10100, 2)*101))]
     }
     out <- scale.out
   }
