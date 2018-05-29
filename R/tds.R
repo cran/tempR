@@ -485,7 +485,10 @@ std.time <- function(X, trim.left = TRUE, trim.right = TRUE, scale = TRUE, missi
     colnames(scale.out) <- 0:100
     rownames(scale.out) <- rownames(X)
     for (i in 1:101) {
-      scale.out[, i] <- out[ , min(101, max(1, round(i * col.out/10100, 2)*101))]
+      #scale.out[, i] <- out[ , min(ncol(out), max(1, round(i * col.out/10100, 2)*101))]
+      if(i == 1) scale.out[, i] <- out[ , 1]
+      if(i == 101) scale.out[, i] <- out[ , col.out]
+      if(i %in% 2:100) scale.out[, i] <- out[ , min(ncol(out), max(1, round(((i * col.out)/101), 0)))]
     }
     out <- scale.out
   }
