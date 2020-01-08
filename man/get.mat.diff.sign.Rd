@@ -35,7 +35,7 @@ signif <- get.mat.diff.sign(s1, s2, n, n)
 signif
 }
 \references{
-Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 }
 \seealso{
 \code{\link[stats]{fisher.test}}

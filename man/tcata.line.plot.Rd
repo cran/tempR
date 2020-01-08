@@ -120,5 +120,5 @@ tcata.line.plot(p.1.checked, n = p.1.eval, attributes = attributes, times = time
                 main = "Sample 1", height = 7, width = 11, legend.cex = 0.7)
 }
 \references{
-Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 }

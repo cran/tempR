@@ -5,8 +5,17 @@
 \alias{tds.diff.plot}
 \title{Plot TDS difference curves}
 \usage{
-tds.diff.plot(X, times = NULL, attributes = NULL, xlab = "Time (seconds)",
-  ylab = "Dominance rate", line.col = 1, lty = 1, lwd = 1, main = "")
+tds.diff.plot(
+  X,
+  times = NULL,
+  attributes = NULL,
+  xlab = "Time (seconds)",
+  ylab = "Dominance rate",
+  line.col = 1,
+  lty = 1,
+  lwd = 1,
+  main = ""
+)
 }
 \arguments{
 \item{X}{matrix of differences in dominance rates (Attributes in rows, Times in columns).}

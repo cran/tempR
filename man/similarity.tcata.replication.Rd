@@ -43,5 +43,5 @@ Similarity between one TCATA assessor and other assessors on the panel is quanti
   similarity.tcata.replication(a1, rbind(a2, a3))
 }
 \references{
-Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 }

@@ -14,7 +14,7 @@ attributes.col = "red", attributes.pch = 17,
 lwd = 1, traj.lab.loc = 0, traj.col = c(grDevices::grey(1/2)), traj.points = NA,
 traj.col.seg = NA, traj.cex = 1, traj.lab = c(), traj.lab.cex = 1,
 arrow.loc = NA, arrow.length = 0.1, arrow.col = NA, arrow.lwd = NA,
-main = "", save.format = "eps", save.as = "")
+contrails = list(), main = "", save.format = "eps", save.as = "")
 }
 \arguments{
 \item{in.pca}{Any \code{list} object with components \code{sdev}, \code{rotation}, and \code{x}. Most often it is a \code{prcomp} object obtained from PCA on a matrix of proportions (or, if there is no missing data, on counts) with Product*Times in rows and Attributes in columns.}
@@ -75,11 +75,13 @@ main = "", save.format = "eps", save.as = "")
 
 \item{arrow.lwd}{Trajectory arrows line width. See \code{lwd} parameter in \code{\link[graphics]{arrows}}.}
 
+\item{contrails}{list of data.frame objects with columns x, y, count, col; x and y are coordinates, count is the number of values at the coordinate, and col is the rbg colour.}
+
 \item{main}{plot title; see \code{\link[graphics]{plot}}.}
 
 \item{save.format}{If indicated, this will be the file type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).}
 
-\item{save.as}{The filename. Must be provided if the file will be saved.s}
+\item{save.as}{The filename. Must be provided if the file will be saved.}
 }
 \description{
 Plot trajectories following PCA on multiblock TCATA proportions, or same for Temporal Dominance of Sensations (TDS) proportions.
@@ -109,9 +111,9 @@ for(i in seq_along(x)){
 
 }
 \references{
-Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 
-Castura, J. C., Baker, A. K., & Ross, C. F. (2016). Using contrails and animated sequences to visualize uncertainty in dynamic sensory profiles obtained from temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 54, 90-100. \url{http://dx.doi.org/10.1016/j.foodqual.2016.06.011}
+Castura, J.C., Baker, A.K., & Ross, C.F. (2016). Using contrails and animated sequences to visualize uncertainty in dynamic sensory profiles obtained from temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 54, 90-100. \url{http://dx.doi.org/10.1016/j.foodqual.2016.06.011}
 }
 \seealso{
 \code{\link[stats]{prcomp}}, \code{\link[graphics]{par}}

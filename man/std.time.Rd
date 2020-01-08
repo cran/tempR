@@ -5,8 +5,7 @@
 \alias{std.time}
 \title{Time standardize results}
 \usage{
-std.time(X, trim.left = TRUE, trim.right = TRUE, scale = TRUE,
-  missing = 0)
+std.time(X, trim.left = TRUE, trim.right = TRUE, scale = TRUE, missing = 0)
 }
 \arguments{
 \item{X}{vector (or data frame) of indicator data.}

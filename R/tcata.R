@@ -12,7 +12,7 @@
 #' @return out smoothed vector (or data frame with smoothed rows)
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @seealso \code{\link[stats]{smooth.spline}}, \code{\link[stats]{predict}}
 #' @examples
 #' # example using 'syrah' data set
@@ -197,7 +197,7 @@ adjust.brightness <- function(rgb.in, percent = 10) {
 #' @return declutter vector in which \code{1} indicates "show" and \code{NA} indicates "hide"
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @seealso \code{\link[stats]{fisher.test}}
 #' @examples
 #' # example using 'ojtcata' data set
@@ -205,7 +205,8 @@ adjust.brightness <- function(rgb.in, percent = 10) {
 #' x <- aggregate(ojtcata[, -c(1:4)], list(samp = ojtcata$samp, attribute = ojtcata$attribute), sum)
 #' p.1.checked <- x[x$samp == 1, -c(1:2)]
 #' p.1.eval <- length(unique(ojtcata$cons))
-#' p.not1.checked <- aggregate(x[, -c(1:2)], list(attribute = x$attribute), sum)[, -1]
+#' p.not1.checked <- aggregate(x[x$samp != 1, -c(1:2)],
+#'   list(attribute = x$attribute[x$samp != 1]), sum)[, -1]
 #' p.not1.eval <- length(unique(ojtcata$cons)) * (length(unique(ojtcata$samp)) - 1)
 #'
 #' # reference lines for contrast products
@@ -281,7 +282,7 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' @param save.as Filename if the file will be saved.
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #' # example using 'syrah' data set
 #' low1 <- t(syrah[seq(3, 1026, by = 6), -c(1:4)])
@@ -412,7 +413,7 @@ tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(), lwd = 1,
 #' @aliases get.mat.diff.sign
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #' # Toy TCATA citations data for two samples: s1, s2
 #' s1 <- t(data.frame(sweet =  c(10, 23, 25, 26, 26, 43, 44),
@@ -477,7 +478,7 @@ get.mat.diff.sign <- function(x = x, y = y, n.x = n.x, n.y = n.x, test.type = "f
 #' @param save.as Filename to use if file will be saved.
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #' # difference between High and Low ethanol wines (sip 1)
 #' x.diff.raw <- t(syrah[seq(1, 1026, by = 6), -c(1:4)]) -
@@ -771,7 +772,7 @@ make.palettes <- function(n){
 #' lwd = 1, traj.lab.loc = 0, traj.col = c(grDevices::grey(1/2)), traj.points = NA,
 #' traj.col.seg = NA, traj.cex = 1, traj.lab = c(), traj.lab.cex = 1,
 #' arrow.loc = NA, arrow.length = 0.1, arrow.col = NA, arrow.lwd = NA,
-#' main = "", save.format = "eps", save.as = "")
+#' contrails = list(), main = "", save.format = "eps", save.as = "")
 #' @param in.pca Any \code{list} object with components \code{sdev}, \code{rotation}, and \code{x}. Most often it is a \code{prcomp} object obtained from PCA on a matrix of proportions (or, if there is no missing data, on counts) with Product*Times in rows and Attributes in columns.
 #' @param products.times a 2-column matrix, with an ascending sort order on products (column 1) and a secondary ascending sort on times (column 2), corresponding to the rows of the matrix submitted to prcomp to obtain \code{"in.pca"}.
 #' @param attributes a vector of attribute labels, corresponding to the attributes of the matrix submitted to prcomp to obtain \code{"in.pca"}.
@@ -801,14 +802,15 @@ make.palettes <- function(n){
 #' @param arrow.length Trajectory arrows length. See \code{length} parameter in \code{\link[graphics]{arrows}}.
 #' @param arrow.col Trajectory arrows color. See \code{col} parameter in \code{\link[graphics]{arrows}}.
 #' @param arrow.lwd Trajectory arrows line width. See \code{lwd} parameter in \code{\link[graphics]{arrows}}.
+#' @param contrails list of data.frame objects with columns x, y, count, col; x and y are coordinates, count is the number of values at the coordinate, and col is the rbg colour.
 #' @param main plot title; see \code{\link[graphics]{plot}}.
 #' @param save.format If indicated, this will be the file type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).
-#' @param save.as The filename. Must be provided if the file will be saved.s
+#' @param save.as The filename. Must be provided if the file will be saved.
 #' @export
 #' @seealso \code{\link[stats]{prcomp}}, \code{\link[graphics]{par}}
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
-#' @references Castura, J. C., Baker, A. K., & Ross, C. F. (2016). Using contrails and animated sequences to visualize uncertainty in dynamic sensory profiles obtained from temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 54, 90-100. \url{http://dx.doi.org/10.1016/j.foodqual.2016.06.011}
+#' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J.C., Baker, A.K., & Ross, C.F. (2016). Using contrails and animated sequences to visualize uncertainty in dynamic sensory profiles obtained from temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 54, 90-100. \url{http://dx.doi.org/10.1016/j.foodqual.2016.06.011}
 #' @examples
 #' # example using 'syrah' data set
 #' syrah.pca <- prcomp(syrah[1:248, -c(1:4)], scale. = FALSE)
@@ -861,6 +863,7 @@ plot_pca.trajectories <- function( in.pca = in.pca,
                                    arrow.length = 0.1,
                                    arrow.col = NA,
                                    arrow.lwd = NA,
+                                   contrails = list(),
                                    main = "",
                                    save.format = "eps",
                                    save.as = "" ){
@@ -943,10 +946,25 @@ plot_pca.trajectories <- function( in.pca = in.pca,
     graphics::axis(1)
     graphics::axis(2)
 
+    DO_CONTRAILS <- FALSE
+    if(length(contrails) > 0){
+      if(length(contrails) == length(products.labels)){
+        DO_CONTRAILS <- TRUE
+        for(i in length(contrails)){
+          # ensure the format of the contrails list is good - should have 1 data frame per product, with these columns: 'x', 'y', 'count'
+          if(!all(c("x", "y", "count", "col") %in% colnames(contrails[[i]]))) DO_CONTRAILS <- FALSE
+        }
+      }
+    }
+
     # add product trajectories
     for(p in 1:length(products.labels) ){
       this.product.scores <- scores[ products.times[, 1] == products.labels[p], ]
-      if(type=="raw"){
+      if(DO_CONTRAILS){
+        graphics::points(x = contrails[[p]]$x, y = contrails[[p]]$y, col = contrails[[p]]$col, pch = 16, cex = .5)
+      }
+
+      if(type=="raw" || length(this.product.scores[, 1]) < 10){
         for(this.time in 1:nrow(this.product.scores)){
           if(this.time > 1){
             last.time = this.time - 1
@@ -963,17 +981,18 @@ plot_pca.trajectories <- function( in.pca = in.pca,
           if(is.na(arrow.lwd[1])) arrow.lwd <- lwd
           for(arr in seq_along(arrow.loc)){
             this.arrow.xy <- this.product.scores[arrow.loc[arr], 1:2]
-            this.arrow.ang <- atan2(mean(this.product.scores[max(arrow.loc[arr], 1):min(arrow.loc[arr] + 25, length(this.product.scores)), 2]) - this.arrow.xy[2],
-                                    mean(this.product.scores[max(arrow.loc[arr], 1):min(arrow.loc[arr] + 25, length(this.product.scores)), 1]) - this.arrow.xy[1]) * 180 / pi
+            this.arrow.ang <- atan2(data.matrix(mean(this.product.scores[max(arrow.loc[arr], 1):min(arrow.loc[arr] + 25, length(this.product.scores)), 2])) - data.matrix(this.arrow.xy[2]),
+                                    data.matrix(mean(this.product.scores[max(arrow.loc[arr], 1):min(arrow.loc[arr] + 25, length(this.product.scores)), 1])) - data.matrix(this.arrow.xy[1])) * 180 / pi
             # get the 'next point' inelegantly
             if(this.arrow.ang > 0) this.arrow.next.xy <- this.arrow.xy + c(1, 1)*arrow.length/10
             if(this.arrow.ang > 90) this.arrow.next.xy <- this.arrow.xy + c(-1, 1)*arrow.length/10
             if(this.arrow.ang < 0) this.arrow.next.xy <- this.arrow.xy + c(1, -1)*arrow.length/10
             if(this.arrow.ang < -90) this.arrow.next.xy <- this.arrow.xy + c(-1, -1)*arrow.length/10
-            graphics::arrows(this.arrow.xy[1], this.arrow.xy[2], this.arrow.next.xy[1], this.arrow.next.xy[2],
-                   length = arrow.length, code = 2,
-                   col = arrow.col[ifelse(length(arrow.col) > 1, p, 1)],
-                   lwd = arrow.lwd[ifelse(length(arrow.lwd) > 1, p, 1)])
+            graphics::arrows(x0 = data.matrix(this.arrow.xy[1]), y0 = data.matrix(this.arrow.xy[2]),
+                             x1 = data.matrix(this.arrow.next.xy[1]), y1 = data.matrix(this.arrow.next.xy[2]),
+                             length = arrow.length, code = 2,
+                             col = arrow.col[ifelse(length(arrow.col) > 1, p, 1)],
+                             lwd = arrow.lwd[ifelse(length(arrow.lwd) > 1, p, 1)])
           }
         }
         # set location of the terminal product labels (end unless validly specified otherwise)
@@ -987,7 +1006,7 @@ plot_pca.trajectories <- function( in.pca = in.pca,
              y = this.product.scores[, 2][traj.lab.loc],
              labels = ifelse(length(traj.lab) == 0, as.character(p), as.character(traj.lab[p])), cex = traj.lab.cex, col="white")
       }
-      if(type=="smooth"){
+      if(type=="smooth" & length(this.product.scores[, 1]) >= 10){
         requireNamespace("stats", quietly = TRUE)
         x.loess <- stats::loess(this.product.scores[, 1] ~ I(1:nrow(this.product.scores)), span = span) #assume departures from smoothness are due to error
         y.loess <- stats::loess(this.product.scores[, 2] ~ I(1:nrow(this.product.scores)), span = span)
@@ -1078,7 +1097,7 @@ dist.city.block <- function (x, y) {
 #' @details Similarity between one TCATA assessor and other assessors on the panel is quantified. The replication index can take on values between \code{0} and \code{1}, which indicate complete dissimilarity (disagreement) and complete similarity (agreement), respectively.
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #'   # Toy TCATA data for three assessors: a1, a2, a3
 #'   a1 <- rbind(rep(0, 7),
@@ -1122,7 +1141,7 @@ similarity.tcata.replication <- function(this.assessor, other.assessors){
 #' @details Similarity between repeated evaluations given by a TCATA assessor is quantified. The repeatability index can take on values between \code{0} and \code{1}, which indicate complete dissimilarity (non-repeatability) and complete similarity (repeatability), respectively.
 #' @export
 #' @encoding UTF-8
-#' @references Castura, J. C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+#' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
 #' @examples
 #'   # Toy data from one TCATA assessor on a product over three sessions: rep1, rep2, rep3
 #'   rep1 <- rbind(rep(0, 7),
