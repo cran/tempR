@@ -24,7 +24,7 @@ A data frame with 1026 rows (3 treatments * 2 sips * 171 time slices) and 13 col
 }
 
 \encoding{UTF-8}
-\references{Baker, A. K., Castura, J. C., & Ross, C. F. (2016). Temporal check-all-that-apply characterization of Syrah wine finish. \emph{Journal of Food Science}, 81, S1521-S1529. \url{http://dx.doi.org/10.1111/1750-3841.13328}.}
+\references{Baker, A.K., Castura, J.C., & Ross, C.F. (2016). Temporal check-all-that-apply characterization of Syrah wine finish. \emph{Journal of Food Science}, 81, S1521-S1529. \doi{10.1111/1750-3841.13328}.}
 \examples{
 head(syrah, 3) # review first 3 rows of 'syrah' data set
 }

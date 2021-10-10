@@ -42,7 +42,7 @@ p.1.declutter <- get.decluttered(x = unlist(p.1.checked), n.x = p.1.eval,
 (p.1.declutter <- matrix(p.1.declutter, nrow = nrow(p.1.checked)))
 }
 \references{
-Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \doi{10.1016/j.foodqual.2015.06.017}
 }
 \seealso{
 \code{\link[stats]{fisher.test}}

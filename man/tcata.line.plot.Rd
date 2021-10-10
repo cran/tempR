@@ -5,15 +5,17 @@
 \alias{tcata.line.plot}
 \title{Temporal Check-All-That-Apply (TCATA) curve}
 \usage{
-tcata.line.plot(X, n = 1, attributes = c(), times = c(), lwd = 1,
-emphasis = NA, emphasis.lty = 1, emphasis.lwd = 3, declutter = NA,
-chance.lty = 3, reference = NA, ref.lty = 2, ref.lwd = 1,
-highlight = FALSE, highlight.lty = 1, highlight.lwd = 5, highlight.col = c(),
-height = 8, width = 12, main = "",
+tcata.line.plot(X, n = 1, attributes = c(), times = c(),
+lwd = 1, lty = 1, line.col = c(),
+emphasis = NA, emphasis.col = c(), emphasis.lty = 1, emphasis.lwd = 3,
+declutter = NA,
+reference = NA, ref.col = c(), ref.lty = 2, ref.lwd = 1,
+highlight = FALSE, highlight.col = c(), highlight.lty = 1, highlight.lwd = 5,
 xlab = "Time", ylab = "Citation proportion", axes.font = 1,
-axes.cex = 1, xlim = c(), las = 0, line.col = c(),
-x.increment = 5, legend.cex = 1, legend.font = 1,
-legend.pos = "topleft", legend.ncol = 2, box = FALSE,
+axes.cex = 1, xlim = c(), las = 0,
+x.increment = 5, box = FALSE,
+legend.cex = 1, legend.font = 1, legend.pos = "topleft", legend.ncol = 2,
+height = 8, width = 12, main = "",
 save.format = "", save.as = "" )
 }
 \arguments{
@@ -25,19 +27,25 @@ save.format = "", save.as = "" )
 
 \item{times}{a vector of time, corresponding to the times in \code{X}.}
 
-\item{lwd}{Line width used when plotting attribute curves in \code{X}.}
+\item{lwd}{line width for attribute curves in \code{X} or matrix of line widths that is the same size as \code{X}.}
+
+\item{lty}{line types for attribute curves in \code{X} or matrix of line types that is the same size as \code{X}.}
+
+\item{line.col}{vector of colors for lines corresponding to rows of \code{X}.}
 
 \item{emphasis}{a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring emphasis, and \code{NA} for points without emphasis.}
 
-\item{emphasis.lty}{Controls the line type associated with the emphasis line.}
+\item{emphasis.col}{vector colours for attributes corresponding to rows of \code{X}; taken from \code{line.col} if not specified.}
 
-\item{emphasis.lwd}{Controls the line weight associated with the emphasis line.}
+\item{emphasis.lty}{either a line type (\code{lty}) for all emphasis lines .}
 
-\item{declutter}{a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points that will not be plotted.}
+\item{emphasis.lwd}{line weight associated with the emphasis line.}
 
-\item{chance.lty}{line type for the chance line. (May be deprecated?)}
+\item{declutter}{a matrix with the same dimensions as \code{X}; give the value \code{1} to show a proportion in \code{X} and \code{reference} (if given), otherwise give \code{0} or \code{NA}.}
 
-\item{reference}{a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points where a reference line will be displayed, and \code{NA} for points where no reference line will be shown.}
+\item{reference}{a matrix with the same dimensions as \code{X}; give the value \code{1} if \code{reference} will be shown (allowing finer control than \code{declutter}), otherwise give \code{0} or \code{NA}.}
+
+\item{ref.col}{\code{reference} line colour.}
 
 \item{ref.lty}{\code{reference} line type.}
 
@@ -45,43 +53,41 @@ save.format = "", save.as = "" )
 
 \item{highlight}{a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring highlighting, and \code{NA} for points without highlighting}
 
-\item{highlight.lty}{Controls the line type associated with the highlighting.}
-
-\item{highlight.lwd}{Controls the line weight associated with the highlighting line.}
-
 \item{highlight.col}{a vector of colours for attributes corresponding to rows of \code{X}.}
 
-\item{height}{Window height.}
+\item{highlight.lty}{line type associated with the highlighting.}
 
-\item{width}{Window width.}
+\item{highlight.lwd}{line weight associated with the highlighting line.}
 
-\item{main}{plot title; see \code{\link[graphics]{plot}}.}
+\item{xlab}{label for the x axis.}
 
-\item{xlab}{Label for the x axis.}
+\item{ylab}{label for the y axis.}
 
-\item{ylab}{Label for the y axis.}
+\item{axes.font}{font for axes labels; see \code{\link[graphics]{par}}.}
 
-\item{axes.font}{Font for axes labels; see \code{\link[graphics]{par}}.}
+\item{axes.cex}{size for axes labels.}
 
-\item{axes.cex}{Size for axes labels.}
-
-\item{xlim}{Permits control of the x limit. Limits can be specified using a vector of 2 (ascending) numbers.}
+\item{xlim}{x limits specified using a vector of 2 (ascending) numbers.}
 
 \item{las}{numeric in {0,1,2,3}; the style of the axis labels. See \code{\link[graphics]{par}}.}
 
-\item{line.col}{A vector of colors for lines corresponding to rows of \code{X}.}
-
-\item{x.increment}{Specifies the interval between times when labelling the x axis.}
-
-\item{legend.cex}{Size of markers shown in the legend.}
-
-\item{legend.font}{Font for the legend; see \code{\link[graphics]{text}}.}
-
-\item{legend.pos}{Location of the legend in the plot; defaults to \code{"topleft"}.}
-
-\item{legend.ncol}{Number of columns in legend.}
+\item{x.increment}{interval between times when labelling the x axis.}
 
 \item{box}{draw box around plot area; see: \code{\link[graphics]{box}}}
+
+\item{legend.cex}{size of markers shown in the legend.}
+
+\item{legend.font}{font for the legend; see \code{\link[graphics]{text}}.}
+
+\item{legend.pos}{location of plot legend; defaults to \code{"topleft"}.}
+
+\item{legend.ncol}{number of columns in legend.}
+
+\item{height}{window height.}
+
+\item{width}{window width.}
+
+\item{main}{plot title; see \code{\link[graphics]{plot}}.}
 
 \item{save.format}{If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).}
 
@@ -114,11 +120,24 @@ times <- get.times(colnames(x)[-c(1:2)])
 attributes <- unique(x$attribute)
 palettes <- make.palettes(length(attributes))
 tcata.line.plot(p.1.checked, n = p.1.eval, attributes = attributes, times = times,
-                reference = p.1.refline, ref.lty = 3, declutter = p.1.declutter,
+                line.col = palettes$pal, reference = p.1.refline, ref.lty = 3,
+                declutter = p.1.declutter,
                 highlight = TRUE, highlight.lwd = 4,
-                line.col = palettes$pal, highlight.col = palettes$pal.light,
-                main = "Sample 1", height = 7, width = 11, legend.cex = 0.7)
+                highlight.col = palettes$pal.light,
+                height = 7, width = 11, legend.cex = 0.7, main = "Sample 1")
+
+# example showing plots similar to those in Meyners & Castura (2018)
+p.all.checked <- aggregate(x[, -c(1:2)], list(attribute = x$attribute), sum)[, -1]
+p.all.eval <- length(unique(ojtcata$cons)) * length(unique(ojtcata$samp))
+lty.mat <- matrix(1,nrow=6,ncol=21)
+lty.mat[, 1:3] <- c(rep(NA,8),rep(c(1,NA),4), 1, 1)
+lty.mat[2, 9:12] <- lty.mat[5, 8] <- 3
+tcata.line.plot(p.1.checked, n = p.1.eval, attributes = attributes, times = times,
+                line.col = palettes$pal, lty = lty.mat, lwd = 2,
+                height = 7, width = 11, legend.cex = 0.7, main = "Sample 1")
 }
 \references{
-Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \doi{10.1016/j.foodqual.2015.06.017}
+
+Meyners, M., Castura, J.C. (2018). The analysis of temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 67, 67-76. \doi{10.1016/j.foodqual.2017.02.003}
 }

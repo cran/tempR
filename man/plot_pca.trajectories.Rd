@@ -8,7 +8,7 @@
 plot_pca.trajectories(in.pca = in.pca, products.times = matrix(NA),
 attributes = c(), type = "smooth", span = 0.75, biplot = "distance",
 flip = c(FALSE, FALSE), dims = c(1, 2),
-att.offset.x = c(), att.offset.y = c(), inflate.factor = NA,
+att.offset.x = c(), att.offset.y = c(), att.cex = 1, inflate.factor = NA,
 xlab = "_auto_", ylab = "_auto_", xlim = NULL, ylim = NULL,
 attributes.col = "red", attributes.pch = 17,
 lwd = 1, traj.lab.loc = 0, traj.col = c(grDevices::grey(1/2)), traj.points = NA,
@@ -36,6 +36,8 @@ contrails = list(), main = "", save.format = "eps", save.as = "")
 \item{att.offset.x}{A vector of numeric values corresponding to the labels in \code{"attributes"}. Used to adjust the horizontal position of attribute labels to make the plot more readable.}
 
 \item{att.offset.y}{A vector of numeric values corresponding to the labels in \code{"attributes"}. Used to adjust the vertical position of attribute labels to make the plot more readable.}
+
+\item{att.cex}{Attribute text size.}
 
 \item{inflate.factor}{Scalar controlling the position of attribute labels. If \code{"NA"} (default), then this scalar is set to the largest absolute score divided by the largest absolute eigenvector based on the dimensions used. Use \code{"1"} for no inflation. Applies only when \code{biplot = "distance"}.}
 
@@ -111,9 +113,9 @@ for(i in seq_along(x)){
 
 }
 \references{
-Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \url{http://dx.doi.org/10.1016/j.foodqual.2015.06.017}
+Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \doi{10.1016/j.foodqual.2015.06.017}
 
-Castura, J.C., Baker, A.K., & Ross, C.F. (2016). Using contrails and animated sequences to visualize uncertainty in dynamic sensory profiles obtained from temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 54, 90-100. \url{http://dx.doi.org/10.1016/j.foodqual.2016.06.011}
+Castura, J.C., Baker, A.K., & Ross, C.F. (2016). Using contrails and animated sequences to visualize uncertainty in dynamic sensory profiles obtained from temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 54, 90-100. \doi{10.1016/j.foodqual.2016.06.011}
 }
 \seealso{
 \code{\link[stats]{prcomp}}, \code{\link[graphics]{par}}

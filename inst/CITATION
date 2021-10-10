@@ -1,6 +1,6 @@
 citHeader("To cite the tempR package in publications use:")
 
-yyyy <- "2020"
+yyyy <- "2021"
 vers <- paste0("R package version ", meta$Version,
               ". http://www.cran.r-project.org/package=tempR/")
 

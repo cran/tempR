@@ -14,7 +14,7 @@ A data frame with 1440 rows (24 assessors * 3 sessions * 4 samples * 5 attribute
   }
 }
 \encoding{UTF-8}
-\references{Findlay, C. J., Castura, J. C., & Valeriote, E. (2014). Temporal methods: A comparative study of four different techniques. In \emph{17th IUFoST Congress}. 17-21 August. Montréal, Québec, Canada.}
+\references{Findlay, C.J., Castura, J.C., & Valeriote, E. (2014). Temporal methods: A comparative study of four different techniques. In \emph{17th IUFoST Congress}. 17-21 August. Montréal, Québec, Canada.}
 \examples{
 head(bars, 2) # review first 2 rows of 'bars' data set
 }

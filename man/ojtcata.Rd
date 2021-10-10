@@ -14,7 +14,7 @@ A data frame with 1800 rows (50 consumers * 6 samples * 6 attributes) and 25 col
   }
 }
 \encoding{UTF-8}
-\references{Ares, G., Jaeger, S. R., Antúnez, L., Vidal, L, Giménez, A., Coste, B., Picallo, A., & Castura, J. C. (2016). Comparison of TCATA and TDS for dynamic sensory characterization of food products. \emph{Food Research International}, 78, 148-158. \url{http://dx.doi.org/10.1016/j.foodres.2015.10.023}}
+\references{Ares, G., Jaeger, S. R., Antúnez, L., Vidal, L, Giménez, A., Coste, B., Picallo, A., & Castura, J.C. (2016). Comparison of TCATA and TDS for dynamic sensory characterization of food products. \emph{Food Research International}, 78, 148-158. \doi{10.1016/j.foodres.2015.10.023}}
 \examples{
 head(ojtcata) # review first 6 rows of 'ojtcata' data set
 }

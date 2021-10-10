@@ -22,7 +22,7 @@
 #' @param save.as Filename if the file will be saved.
 #' @export
 #' @encoding UTF-8
-#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
+#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' # example using 'bars' data set
 #' bars.m <- aggregate(bars[, -c(1:4)], list(samples = bars$sample, attribute = bars$attribute), mean)
@@ -116,7 +116,7 @@ tds.plot <- function(X, attributes = NULL, times = NULL, chance = NULL,
 #' @param n number of observations (evaluations) per cell
 #' @export
 #' @encoding UTF-8
-#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
+#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' x <- rbind(c( 6,  6,  8, 14, 16, 22, 22, 21, 13, 11, 14,  7,  7,  6,  5,  3),
 #'            c(14, 24, 31, 36, 37, 39, 44, 48, 51, 55, 48, 40, 30, 20, 10,  5),
@@ -176,7 +176,7 @@ get.times <- function(time.char, trim.left = "time_", trim.right = "s") {
 #' @param include.stop defaut is \code{FALSE}. Default should be kept if time standardization is applied. Optionally, set to \code{TRUE} if analyzing data on the raw timeline.
 #' @export
 #' @encoding UTF-8
-#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
+#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' # example using 'bars' data set
 #' attributes <- unique(bars$attribute)
@@ -204,7 +204,7 @@ get.chance <- function(attributes = c(), include.stop = FALSE) {
 #' @details The TDS significance level proposed by Pineau et al. (2009, Eq. 1) provides a simple and widely used heuristic approach for contextualizing observed dominance rates, but should not be used for statistical inference.
 #' @export
 #' @encoding UTF-8
-#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
+#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' # example using 'bars' data set
 #' attributes <- unique(bars$attribute)
@@ -232,7 +232,7 @@ get.significance <- function(chance, n, alpha = 0.05) {
 #' @return out vector of differences in dominance rates
 #' @export
 #' @encoding UTF-8
-#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
+#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' # example using 'bars' data set
 #' bars.m <- aggregate(bars[, -c(1:4)], list(samples = bars$sample, attribute = bars$attribute), mean)
@@ -269,7 +269,7 @@ get.differences <- function(x, y) {
 #' @details Calculation of least significant differences for TDS difference curves based on Pineau et al. (2009, Eq. 2). The absolute value of the observed dominance rate for a give attribute*time must exceed the corresponding least significant difference calculated here to be considered significant.
 #' @export
 #' @encoding UTF-8
-#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
+#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' # toy data example
 #' x <- data.frame(t10 = c(rep(NA, 15), rep(0, 50), rep(1, 20)),
@@ -319,7 +319,7 @@ get.significance.diff <- function(x, y, alpha = 0.05) {
 #' @details Currently the differences in dominance rates are always displayed. Suppression of differences in dominances rates within a threshold range is not yet implemented.
 #' @export
 #' @encoding UTF-8
-#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \url{http://dx.doi.org/10.1016/j.foodqual.2009.04.005}
+#' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' # example using 'bars' data set
 #' bars.m <- aggregate(bars[, -c(1:4)], list(samples = bars$sample, attribute = bars$attribute), mean)
