@@ -204,23 +204,23 @@ adjust.brightness <- function(rgb.in, percent = 10) {
 #' @export
 #' @encoding UTF-8
 #' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \doi{10.1016/j.foodqual.2015.06.017}
-#' @seealso \code{\link[stats]{fisher.test}}
+#' @seealso \code{\link[stats]{fisher.test}}, \code{\link[tempR]{citation.counts}}
 #' @examples
-#' # example using 'ojtcata' data set
-#' data(ojtcata)
-#' x <- aggregate(ojtcata[, -c(1:4)], list(samp = ojtcata$samp, attribute = ojtcata$attribute), sum)
-#' p.1.checked <- x[x$samp == 1, -c(1:2)]
-#' p.1.eval <- length(unique(ojtcata$cons))
-#' p.not1.checked <- aggregate(x[x$samp != 1, -c(1:2)],
-#'   list(attribute = x$attribute[x$samp != 1]), sum)[, -1]
-#' p.not1.eval <- length(unique(ojtcata$cons)) * (length(unique(ojtcata$samp)) - 1)
 #'
-#' # reference lines for contrast products
-#' p.1.refline <- p.not1.checked / p.not1.eval
-#' # decluttering matrix corresponds to the dimensions of p.1.refline
-#' p.1.declutter <- get.decluttered(x = unlist(p.1.checked), n.x = p.1.eval,
-#'                                         y = unlist(p.not1.checked), n.y = p.not1.eval)
-#' (p.1.declutter <- matrix(p.1.declutter, nrow = nrow(p.1.checked)))
+#' # functionality of get.decluttered() is conveniently provided in citation.counts()
+#'
+#' # Data set: ojtcata
+#' # Get declutter matrix for comparison of Product 2 vs. average of all products
+#' data(ojtcata)
+#' oj2.v.all <- citation.counts(ojtcata, product.name = "2", product.col = 2,
+#'        attribute.col = 4, results.col = 5:25, comparison = "average")
+#' oj2.v.all$declutter
+#'
+#' # same as
+#'
+#' p2.declutter <- get.decluttered(x = c(oj2.v.all$P1), n.x = oj2.v.all$Pn,
+#'                                 y = c(oj2.v.all$C1), n.y = oj2.v.all$Cn)
+#' (p2.declutter <- matrix(p2.declutter, nrow = nrow(oj2.v.all$P1)))
 get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
   if(any(is.na(x), is.na(y), is.na(n.x), is.na(n.y))) return(print("All parameters required"))
   if(length(x) != length(y)) return(print("Length of x and y must be equal"))
@@ -234,6 +234,100 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
   declutter =  1 * (apply(tmp, 1, fisher.test2) < alpha)
   declutter[declutter == 0] <- NA
   return(declutter = declutter)
+}
+
+#' Counts TCATA Citations and Observations for a Product and a Comparison Set
+#'
+#' Calculates how many times a specified product was checked and how many times a comparison set was checked.
+#' The number of evaluations for the product and comparison set are also calculated,
+#' along with a reference and decluttering matrix for plotting in \code{\link[tempR]{tcata.line.plot}}.
+#' @name citation.counts
+#' @aliases citation.counts
+#' @usage citation.counts(x, product.name = "", product.col = 1,
+#' attribute.col = 2, results.col = NULL, comparison = "average")
+#' @param x matrix of TCATA 0/1 data with (Assessors x Products x Reps x Attributes) in rows with row headers and (Times) in columns
+#' @param product.name name of the product for which to calculate how many times a product was checked and not checked
+#' @param product.col index of column in \code{x} that contains the product identities
+#' @param attribute.col index of column in \code{x} that contains the attribute identities
+#' @param results.col indices of columns in \code{x} that contain the raw (0/1) data
+#' @param comparison specifies whether the comparison will be with the average of \emph{all} products (\code{"average"} (default)) or with the average of the \emph{other} products (\code{"other"}, i.e. excludes the product specified by \code{product.name})
+#' @return list object with three elements:
+#' \itemize{
+#' \item{\code{P1} matrix of counts for product specified by \code{product.name}
+#' (attributes are in rows; times are in columns).}
+#' \item{\code{Pn} number of observations for \code{product.name}}
+#' \item{\code{C1} matrix of counts for comparison set specified by \code{comparison}
+#' (dimensions equal to \code{P1}.}
+#' \item{\code{Cn} number of observations for the comparison set defined by \code{comparison}}
+#' \item{\code{ref} a matrix of citation proportions for the comparison set specified
+#' by \code{comparison} (dimensions equal to \code{P1}; can be used to draw a reference line;
+#' see \code{\link[tempR]{tcata.line.plot}}}
+#' \item{\code{declutter} a matrix for decluttering in a line plot
+#' (dimensions equal to \code{P1}; see \code{\link[tempR]{get.decluttered}}}}
+#' @export
+#' @encoding UTF-8
+#' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \doi{10.1016/j.foodqual.2015.06.017}
+#' @references Meyners, M., Castura, J.C. (2018). The analysis of temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 67, 67-76. \doi{10.1016/j.foodqual.2017.02.003}
+#' @seealso \code{\link[tempR]{tcata.line.plot}}, \code{\link[tempR]{get.decluttered}}
+#' @examples
+#' # example using 'ojtcata' data set
+#' data(ojtcata)
+#'
+#' # comparison of Orange Juice 3 vs. all other OJs (1, 2, 4, 5, 6)
+#' oj3.v.other <- citation.counts(ojtcata, product.name = "3", product.col = 2,
+#'        attribute.col = 4, results.col = 5:25, comparison = "other")
+#'
+#' # show results
+#' oj3.v.other
+#'
+#' times <- get.times(colnames(ojtcata)[-c(1:4)])
+#' attributes <- unique(ojtcata$attribute)
+#' palettes <- make.palettes(length(attributes))
+#'
+#' # plot results
+#' tcata.line.plot(oj3.v.other$P1, n = oj3.v.other$Pn,
+#'    attributes = attributes, times = times,
+#'    line.col = palettes$pal, reference = oj3.v.other$ref, ref.lty = 3,
+#'    declutter = oj3.v.other$declutter, highlight = TRUE, highlight.lwd = 4,
+#'    highlight.col = palettes$pal.light,
+#'    height = 7, width = 11, legend.cex = 0.7, main = "Product 3 vs. Other Products")
+citation.counts <- function(x, product.name = "",
+                          product.col = 1, attribute.col = 2,
+                          results.col = NULL, comparison = "average"){
+  if(product.name == ""){
+    product.name <- unique(x[, product.col])[1]
+  }
+  if(is.null(results.col)){
+    results.col <- (1:ncol(x))[-c(product.col, attribute.col)]
+  }
+  AllProducts1 <- stats::aggregate(x[, results.col],
+                            list(samp = x[, product.col], attribute = x[, attribute.col]),
+                            sum)
+  P1 <- as.matrix(AllProducts1[AllProducts1$samp == product.name, -c(1:2)])
+  Pn <- nrow(x[x[,product.col] == product.name &
+                 x[,attribute.col] == unique(x[,attribute.col])[1], ])
+  if(comparison == "average"){
+    C1 <- as.matrix(stats::aggregate(AllProducts1[, -c(1:2)],
+                    list(attribute = AllProducts1[, 2]),
+                    sum)[,-1])
+    Cn <- nrow(x)/length(unique(x[,attribute.col]))
+  }
+  if(comparison == "other"){
+    C1 <- as.matrix(stats::aggregate(AllProducts1[AllProducts1$samp !=
+                                                    product.name, -c(1:2)],
+                    list(attribute = AllProducts1[AllProducts1$samp !=
+                                                    product.name, 2]),
+                    sum)[,-1])
+    Cn <- nrow(x[x[,product.col] != product.name &
+                   x[,attribute.col] == unique(x[,attribute.col])[1], ])
+  }
+  ref <- C1 / Cn
+  declutter <-  matrix(get.decluttered(x = c(P1), n.x = Pn,
+                                       y = c(C1), n.y = Cn),
+                       nrow = nrow(P1), dimnames = dimnames(P1))
+
+  return(list(P1 = P1, Pn = Pn, C1 = C1, Cn = Cn,
+              ref = ref, declutter = declutter))
 }
 
 #' Temporal Check-All-That-Apply (TCATA) curve
@@ -257,10 +351,10 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' @param n The number of observations if \code{X} is a count matrix. Keep \code{n = 1} if \code{X} is a matrix of proportions.
 #' @param attributes a vector of attribute labels, corresponding to the attributes in \code{X}.
 #' @param times a vector of time, corresponding to the times in \code{X}.
-#' @param lwd line width for attribute curves in \code{X} or matrix of line widths that is the same size as \code{X}.
-#' @param lty line types for attribute curves in \code{X} or matrix of line types that is the same size as \code{X}.
-#' @param line.col vector of colors for lines corresponding to rows of \code{X}.
-#' @param emphasis a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring emphasis, and \code{NA} for points without emphasis.
+#' @param lwd line width for attribute curves that matches either \code{attributes} or \code{X}.
+#' @param lty line types for attribute curves that matches either \code{attributes} or \code{X}.
+#' @param line.col attribute curves colours that matches \code{attributes}.
+#' @param emphasis matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring emphasis, and \code{NA} for points without emphasis.
 #' @param emphasis.col vector colours for attributes corresponding to rows of \code{X}; taken from \code{line.col} if not specified.
 #' @param emphasis.lty either a line type (\code{lty}) for all emphasis lines .
 #' @param emphasis.lwd line weight associated with the emphasis line.
@@ -269,7 +363,7 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #' @param ref.col \code{reference} line colour.
 #' @param ref.lty \code{reference} line type.
 #' @param ref.lwd \code{reference} line width.
-#' @param highlight a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring highlighting, and \code{NA} for points without highlighting
+#' @param highlight TRUE if differences will be highlighted; otherwise FALSE
 #' @param highlight.col a vector of colours for attributes corresponding to rows of \code{X}.
 #' @param highlight.lty line type associated with the highlighting.
 #' @param highlight.lwd line weight associated with the highlighting line.
@@ -302,37 +396,31 @@ get.decluttered <- function(x = x, n.x = n.x, y = y, n.y = n.y, alpha = 0.05){
 #'
 #' # example using 'ojtcata' data set
 #' data(ojtcata)
-#' x <- aggregate(ojtcata[, -c(1:4)], list(samp = ojtcata$samp, attribute = ojtcata$attribute), sum)
-#' p.1.checked <- x[x$samp == 1, -c(1:2)]
-#' p.1.eval <- length(unique(ojtcata$cons))
-#' p.not1.checked <- aggregate(x[, -c(1:2)], list(attribute = x$attribute), sum)[, -1]
-#' p.not1.eval <- length(unique(ojtcata$cons)) * (length(unique(ojtcata$samp)) - 1)
-#'
-#' # reference lines for contrast products
-#' p.1.refline <- p.not1.checked / p.not1.eval
-#' # decluttering matrix corresponds to the dimensions of p.1.refline
-#' p.1.declutter <- matrix(get.decluttered(x = unlist(p.1.checked), n.x = p.1.eval,
-#'                                         y = unlist(p.not1.checked), n.y = p.not1.eval),
-#'                         nrow = nrow(p.1.checked))
-#' times <- get.times(colnames(x)[-c(1:2)])
-#' attributes <- unique(x$attribute)
+#' # comparison of Orange Juice 1 vs. Other OJs (2 to 6)
+#' oj1.v.other <- citation.counts(ojtcata, product.name = "1", product.col = 2,
+#'        attribute.col = 4, results.col = 5:25, comparison = "other")
+#' times <- get.times(colnames(ojtcata)[-c(1:4)])
+#' attributes <- unique(ojtcata$attribute)
 #' palettes <- make.palettes(length(attributes))
-#' tcata.line.plot(p.1.checked, n = p.1.eval, attributes = attributes, times = times,
-#'                 line.col = palettes$pal, reference = p.1.refline, ref.lty = 3,
-#'                 declutter = p.1.declutter,
-#'                 highlight = TRUE, highlight.lwd = 4,
-#'                 highlight.col = palettes$pal.light,
-#'                 height = 7, width = 11, legend.cex = 0.7, main = "Sample 1")
+#'
+#' # plot results
+#' tcata.line.plot(oj1.v.other$P1, n = oj1.v.other$Pn,
+#'    attributes = attributes, times = times,
+#'    line.col = palettes$pal, reference = oj1.v.other$ref, ref.lty = 3,
+#'    declutter = oj1.v.other$declutter, highlight = TRUE, highlight.lwd = 4,
+#'    highlight.col = palettes$pal.light,
+#'    height = 7, width = 11, legend.cex = 0.7, main = "Product 1 vs. Other Products")
 #'
 #' # example showing plots similar to those in Meyners & Castura (2018)
-#' p.all.checked <- aggregate(x[, -c(1:2)], list(attribute = x$attribute), sum)[, -1]
-#' p.all.eval <- length(unique(ojtcata$cons)) * length(unique(ojtcata$samp))
+#' # comparison of Orange Juice 1 vs. All OJs (1 to 6)
+#' oj1.v.all <- citation.counts(ojtcata, product.name = "1", product.col = 2,
+#'        attribute.col = 4, results.col = 5:25, comparison = "average")
 #' lty.mat <- matrix(1,nrow=6,ncol=21)
 #' lty.mat[, 1:3] <- c(rep(NA,8),rep(c(1,NA),4), 1, 1)
 #' lty.mat[2, 9:12] <- lty.mat[5, 8] <- 3
-#' tcata.line.plot(p.1.checked, n = p.1.eval, attributes = attributes, times = times,
-#'                 line.col = palettes$pal, lty = lty.mat, lwd = 2,
-#'                 height = 7, width = 11, legend.cex = 0.7, main = "Sample 1")
+#' tcata.line.plot(oj1.v.all$P1, n = oj1.v.all$Pn, attributes = attributes,
+#'                 times = times, line.col = palettes$pal, lty = lty.mat, lwd = 2,
+#'                 height = 7, width = 11, legend.cex = 0.7, main = "Product 1 vs. All Products")
 tcata.line.plot <- function(X, n = 1, attributes = c(), times = c(),
                             lwd = 1, lty = 1, line.col = c(),
                             emphasis = NA, emphasis.col = c(),
@@ -538,7 +626,7 @@ get.mat.diff.sign <- function(x = x, y = y, n.x = n.x, n.y = n.x, test.type = "f
 #' @param declutter indicator matrix with same dimensions of \code{x1} to suppress output
 #' @param get.decluttered if \code{TRUE} then calculates the \code{declutter}  matrix from \code{get.mat.diff.sign}
 #' @param emphasis set to \code{1} to emphasize significant differences
-#' @param alpha significance level to use for entrywise test of \code{x1} and \code{x2} (if counts)
+#' @param alpha significance level for entrywise test of \code{x1} and \code{x2} (if counts)
 #' @param emphasis.lwd line weight for emphasizing significant differences
 #' @param main plot title; see \code{\link[graphics]{plot}}
 #' @param height plot height

@@ -60,7 +60,9 @@ tds.plot <- function(X, attributes = NULL, times = NULL, chance = NULL,
     line.col <- pretty_palette(length(attributes))
   }
 
-  grDevices::dev.new(height = height, width = width)
+  if (!nzchar(Sys.getenv("RSTUDIO_USER_IDENTITY"))){
+    grDevices::dev.new(height = height, width = width)
+  }
 
   if(save.as != "") {
     grDevices::postscript(save.as)

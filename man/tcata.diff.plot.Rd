@@ -34,7 +34,7 @@ legend.cex = 1, legend.font = 1, save.as = "")
 
 \item{emphasis}{set to \code{1} to emphasize significant differences}
 
-\item{alpha}{significance level to use for entrywise test of \code{x1} and \code{x2} (if counts)}
+\item{alpha}{significance level for entrywise test of \code{x1} and \code{x2} (if counts)}
 
 \item{emphasis.lwd}{line weight for emphasizing significant differences}
 

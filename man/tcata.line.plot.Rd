@@ -27,13 +27,13 @@ save.format = "", save.as = "" )
 
 \item{times}{a vector of time, corresponding to the times in \code{X}.}
 
-\item{lwd}{line width for attribute curves in \code{X} or matrix of line widths that is the same size as \code{X}.}
+\item{lwd}{line width for attribute curves that matches either \code{attributes} or \code{X}.}
 
-\item{lty}{line types for attribute curves in \code{X} or matrix of line types that is the same size as \code{X}.}
+\item{lty}{line types for attribute curves that matches either \code{attributes} or \code{X}.}
 
-\item{line.col}{vector of colors for lines corresponding to rows of \code{X}.}
+\item{line.col}{attribute curves colours that matches \code{attributes}.}
 
-\item{emphasis}{a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring emphasis, and \code{NA} for points without emphasis.}
+\item{emphasis}{matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring emphasis, and \code{NA} for points without emphasis.}
 
 \item{emphasis.col}{vector colours for attributes corresponding to rows of \code{X}; taken from \code{line.col} if not specified.}
 
@@ -51,7 +51,7 @@ save.format = "", save.as = "" )
 
 \item{ref.lwd}{\code{reference} line width.}
 
-\item{highlight}{a matrix matching \code{X} in its dimensions, with a numeric value corresponding to points requiring highlighting, and \code{NA} for points without highlighting}
+\item{highlight}{TRUE if differences will be highlighted; otherwise FALSE}
 
 \item{highlight.col}{a vector of colours for attributes corresponding to rows of \code{X}.}
 
@@ -104,37 +104,31 @@ tcata.line.plot(get.smooth(low1), lwd = 2, main = "Low-ethanol wine (Sip 1)")
 
 # example using 'ojtcata' data set
 data(ojtcata)
-x <- aggregate(ojtcata[, -c(1:4)], list(samp = ojtcata$samp, attribute = ojtcata$attribute), sum)
-p.1.checked <- x[x$samp == 1, -c(1:2)]
-p.1.eval <- length(unique(ojtcata$cons))
-p.not1.checked <- aggregate(x[, -c(1:2)], list(attribute = x$attribute), sum)[, -1]
-p.not1.eval <- length(unique(ojtcata$cons)) * (length(unique(ojtcata$samp)) - 1)
-
-# reference lines for contrast products
-p.1.refline <- p.not1.checked / p.not1.eval
-# decluttering matrix corresponds to the dimensions of p.1.refline
-p.1.declutter <- matrix(get.decluttered(x = unlist(p.1.checked), n.x = p.1.eval,
-                                        y = unlist(p.not1.checked), n.y = p.not1.eval),
-                        nrow = nrow(p.1.checked))
-times <- get.times(colnames(x)[-c(1:2)])
-attributes <- unique(x$attribute)
+# comparison of Orange Juice 1 vs. Other OJs (2 to 6)
+oj1.v.other <- citation.counts(ojtcata, product.name = "1", product.col = 2,
+       attribute.col = 4, results.col = 5:25, comparison = "other")
+times <- get.times(colnames(ojtcata)[-c(1:4)])
+attributes <- unique(ojtcata$attribute)
 palettes <- make.palettes(length(attributes))
-tcata.line.plot(p.1.checked, n = p.1.eval, attributes = attributes, times = times,
-                line.col = palettes$pal, reference = p.1.refline, ref.lty = 3,
-                declutter = p.1.declutter,
-                highlight = TRUE, highlight.lwd = 4,
-                highlight.col = palettes$pal.light,
-                height = 7, width = 11, legend.cex = 0.7, main = "Sample 1")
+
+# plot results
+tcata.line.plot(oj1.v.other$P1, n = oj1.v.other$Pn,
+   attributes = attributes, times = times,
+   line.col = palettes$pal, reference = oj1.v.other$ref, ref.lty = 3,
+   declutter = oj1.v.other$declutter, highlight = TRUE, highlight.lwd = 4,
+   highlight.col = palettes$pal.light,
+   height = 7, width = 11, legend.cex = 0.7, main = "Product 1 vs. Other Products")
 
 # example showing plots similar to those in Meyners & Castura (2018)
-p.all.checked <- aggregate(x[, -c(1:2)], list(attribute = x$attribute), sum)[, -1]
-p.all.eval <- length(unique(ojtcata$cons)) * length(unique(ojtcata$samp))
+# comparison of Orange Juice 1 vs. All OJs (1 to 6)
+oj1.v.all <- citation.counts(ojtcata, product.name = "1", product.col = 2,
+       attribute.col = 4, results.col = 5:25, comparison = "average")
 lty.mat <- matrix(1,nrow=6,ncol=21)
 lty.mat[, 1:3] <- c(rep(NA,8),rep(c(1,NA),4), 1, 1)
 lty.mat[2, 9:12] <- lty.mat[5, 8] <- 3
-tcata.line.plot(p.1.checked, n = p.1.eval, attributes = attributes, times = times,
-                line.col = palettes$pal, lty = lty.mat, lwd = 2,
-                height = 7, width = 11, legend.cex = 0.7, main = "Sample 1")
+tcata.line.plot(oj1.v.all$P1, n = oj1.v.all$Pn, attributes = attributes,
+                times = times, line.col = palettes$pal, lty = lty.mat, lwd = 2,
+                height = 7, width = 11, legend.cex = 0.7, main = "Product 1 vs. All Products")
 }
 \references{
 Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \doi{10.1016/j.foodqual.2015.06.017}

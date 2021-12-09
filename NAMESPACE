@@ -2,6 +2,7 @@
 
 export(adjust.brightness)
 export(bootstrap.band)
+export(citation.counts)
 export(convert.tcata)
 export(convert.tcategory)
 export(count.selections)

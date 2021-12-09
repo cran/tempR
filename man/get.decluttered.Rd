@@ -25,25 +25,25 @@ declutter vector in which \code{1} indicates "show" and \code{NA} indicates "hid
 Declutter TCATA curves by hiding reference lines from plots showing TCATA curves.
 }
 \examples{
-# example using 'ojtcata' data set
-data(ojtcata)
-x <- aggregate(ojtcata[, -c(1:4)], list(samp = ojtcata$samp, attribute = ojtcata$attribute), sum)
-p.1.checked <- x[x$samp == 1, -c(1:2)]
-p.1.eval <- length(unique(ojtcata$cons))
-p.not1.checked <- aggregate(x[x$samp != 1, -c(1:2)],
-  list(attribute = x$attribute[x$samp != 1]), sum)[, -1]
-p.not1.eval <- length(unique(ojtcata$cons)) * (length(unique(ojtcata$samp)) - 1)
 
-# reference lines for contrast products
-p.1.refline <- p.not1.checked / p.not1.eval
-# decluttering matrix corresponds to the dimensions of p.1.refline
-p.1.declutter <- get.decluttered(x = unlist(p.1.checked), n.x = p.1.eval,
-                                        y = unlist(p.not1.checked), n.y = p.not1.eval)
-(p.1.declutter <- matrix(p.1.declutter, nrow = nrow(p.1.checked)))
+# functionality of get.decluttered() is conveniently provided in citation.counts()
+
+# Data set: ojtcata
+# Get declutter matrix for comparison of Product 2 vs. average of all products
+data(ojtcata)
+oj2.v.all <- citation.counts(ojtcata, product.name = "2", product.col = 2,
+       attribute.col = 4, results.col = 5:25, comparison = "average")
+oj2.v.all$declutter
+
+# same as
+
+p2.declutter <- get.decluttered(x = c(oj2.v.all$P1), n.x = oj2.v.all$Pn,
+                                y = c(oj2.v.all$C1), n.y = oj2.v.all$Cn)
+(p2.declutter <- matrix(p2.declutter, nrow = nrow(oj2.v.all$P1)))
 }
 \references{
 Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \doi{10.1016/j.foodqual.2015.06.017}
 }
 \seealso{
-\code{\link[stats]{fisher.test}}
+\code{\link[stats]{fisher.test}}, \code{\link[tempR]{citation.counts}}
 }
