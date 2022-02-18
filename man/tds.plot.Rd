@@ -43,9 +43,9 @@ Plots TDS curves based on dominance rates, showing chance and significance lines
 }
 \examples{
 # example using 'bars' data set
-bars.m <- aggregate(bars[, -c(1:4)], list(samples = bars$sample, attribute = bars$attribute), mean)
+bars.m <- aggregate(bars[, -c(1:4)], list(sample = bars$sample, attribute = bars$attribute), mean)
 bars.m <- bars.m[order(bars.m$sample, bars.m$attribute), ]
-attributes <- unique(bars$attribute)
+attributes <- as.character(bars.m$attribute[bars.m$sample == 1])
 times <- get.times(colnames(bars.m)[-c(1:2)])
 chance <- get.chance(attributes)
 signif <- get.significance(chance, nrow(unique(bars[, 1:2])))

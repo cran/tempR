@@ -25,9 +25,9 @@
 #' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' # example using 'bars' data set
-#' bars.m <- aggregate(bars[, -c(1:4)], list(samples = bars$sample, attribute = bars$attribute), mean)
+#' bars.m <- aggregate(bars[, -c(1:4)], list(sample = bars$sample, attribute = bars$attribute), mean)
 #' bars.m <- bars.m[order(bars.m$sample, bars.m$attribute), ]
-#' attributes <- unique(bars$attribute)
+#' attributes <- as.character(bars.m$attribute[bars.m$sample == 1])
 #' times <- get.times(colnames(bars.m)[-c(1:2)])
 #' chance <- get.chance(attributes)
 #' signif <- get.significance(chance, nrow(unique(bars[, 1:2])))
@@ -237,9 +237,9 @@ get.significance <- function(chance, n, alpha = 0.05) {
 #' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}
 #' @examples
 #' # example using 'bars' data set
-#' bars.m <- aggregate(bars[, -c(1:4)], list(samples = bars$sample, attribute = bars$attribute), mean)
+#' bars.m <- aggregate(bars[, -c(1:4)], list(sample = bars$sample, attribute = bars$attribute), mean)
 #' bars.m <- bars.m[order(bars.m$sample, bars.m$attribute), ]
-#' attributes <- unique(bars$attribute)
+#' attributes <- bars.m$attribute[bars.m$sample == 1]
 #' times <- get.times(colnames(bars.m)[-c(1:2)])
 #' bar1 <- bars.m[bars.m$sample == 1 & bars.m$attribute == "Caramelized Flavour", -c(1:2)]
 #' bar2 <- bars.m[bars.m$sample == 2 & bars.m$attribute == "Caramelized Flavour", -c(1:2)]
