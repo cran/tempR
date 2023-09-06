@@ -61,5 +61,7 @@ colnames(bar1.std)[5:ncol(bar1.std)] <- 0:100
 head(bar1.std)
 }
 \references{
+Castura, J.C. (2019). Investigating temporal sensory data via a graph theoretic approach. \emph{Food Quality and Preference}, 79, 103787. \doi{10.1016/j.foodqual.2019.103787}
+
 Lenfant, F., Loret, C., Pineau, N., Hartmann, C., & Martin, N. (2009). Perception of oral food breakdown. The concept of sensory trajectory. \emph{Appetite}, 52, 659-667.
 }

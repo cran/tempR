@@ -417,6 +417,7 @@ lengthwhichis.na <- function(x){
 #' @return out vector (or data frame) of trimmed and/or standardized indicator (\code{0}/\code{1}) data
 #' @export
 #' @encoding UTF-8
+#' @references Castura, J.C. (2019). Investigating temporal sensory data via a graph theoretic approach. \emph{Food Quality and Preference}, 79, 103787. \doi{10.1016/j.foodqual.2019.103787}
 #' @references Lenfant, F., Loret, C., Pineau, N., Hartmann, C., & Martin, N. (2009). Perception of oral food breakdown. The concept of sensory trajectory. \emph{Appetite}, 52, 659-667.
 #' @examples
 #' # vector - toy data example

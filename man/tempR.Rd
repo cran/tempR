@@ -4,6 +4,7 @@
 \encoding{UTF-8}
 \name{tempR}
 \alias{tempR}
+\alias{tempR-package}
 \title{tempR}
 \description{
 Analysis and visualization of data from temporal sensory methods, including for temporal check-all-that-apply (TCATA) and temporal dominance of sensations (TDS).

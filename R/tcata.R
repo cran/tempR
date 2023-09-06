@@ -1169,7 +1169,10 @@ plot_pca.trajectories <- function( in.pca = in.pca,
         y.loess <- stats::loess(this.product.scores[, 2] ~ I(1:nrow(this.product.scores)), span = span)
         graphics::points(x = stats::fitted(x.loess)[traj.points], y = stats::fitted(y.loess)[traj.points],
                pch = 20, cex=traj.cex, col = ifelse(length(traj.col) == 1, traj.col[1], traj.col[p]) ) # plot trajectories
-        if(class(traj.col.seg) == "logical" & is.na(traj.col.seg)[1]){
+
+        #if (class(traj.col.seg) == "logical" & is.na(traj.col.seg)[1]) {
+
+        if(all(is.logical(traj.col.seg)) & is.na(traj.col.seg)[1]){
           graphics::lines(stats::fitted(x.loess), stats::fitted(y.loess), lwd = lwd, col = ifelse(length(traj.col) == 1, traj.col[1], traj.col[p]))
         } else {
           for(j in 2:length(stats::fitted(x.loess))){
@@ -1406,4 +1409,83 @@ bootstrap.band <- function(X, boot = 999, alpha = 0.05, return.bias = FALSE){
     return(list(lcl = out$lcl, ucl = out$ucl))
   }
 }
+
+
+
+#' Draw h-cross, range box, and box to enclose h-box
+#'
+#' Draw h-cross, range box, and box to enclose h-cross, described
+#' by Castura, Rutledge, Ross & Næs (2022).
+#' @name draw.hcross
+#' @aliases draw.hcross
+#' @usage draw.hcross(rangebox = NULL, hcross = NULL,
+#' rbox.col = "black", rbox.lty = "dotted", rbox.lwd = 4.5,
+#' hbox.col = "lightgrey", hbox.lty = "solid", hbox.lwd = 4.5,
+#' hcross.col = "black",hcross.lty = "solid",
+#' hcross.signif.lwd = 7, hcross.nsd.lwd = 3.5)
+#' @param rangebox matrix where columns 1 and 2 are x and y dimensions and
+#' rows 1 and 2 are the minimum and maximum values
+#' @param hcross matrix where columns 1 and 2 are x and y dimensions and
+#' rows 1 and 2 are the half-width of the confidence interval, which is often
+#' 95\% thus approximately 2x the standard error
+#' @param rbox.col  line color for the range box (default: \code{"black"})
+#' @param rbox.lty line type for the range box (default: \code{"dotted"})
+#' @param rbox.lwd  line width for the range box (default: \code{4.5})
+#' @param hbox.col  line color for the box enclosing the h-cross
+#' (default: \code{"lightgrey"})
+#' @param hbox.lty line type for the box enclosing the h-cross
+#' (default: \code{"dotted"})
+#' @param hbox.lwd  line width for the box enclosing the h-cross
+#' (default: \code{4.5})
+#' @param hcross.col line color for the h-cross (default: \code{"solid"})
+#' @param hcross.lty line type for the h-cross (default: \code{"solid"})
+#' @param hcross.signif.lwd line width for the h-cross where there is a
+#' significant difference (default: \code{7})
+#' @param hcross.nsd.lwd line width for the h-cross where there is a
+#' significant difference (default: \code{3.5})
+#' @details Draw h-cross, range box, and box to enclose h-box.
+#' @references Castura, J.C., Rutledge, D.N., Ross, C.F., & Næs, T. (2022). Discriminability and uncertainty in principal component analysis (PCA) of temporal check-all-that-apply (TCATA) data. \emph{Food Quality and Preference}, 96, 104370. \doi{10.1016/j.foodqual.2021.104370}
+#' @encoding UTF-8
+draw.hcross <- function(rangebox = NULL, hcross = NULL,
+                        rbox.col = "black", rbox.lty = "dotted", rbox.lwd = 4.5,
+                        hbox.col = "lightgrey", hbox.lty = "solid", hbox.lwd = 4.5,
+                        hcross.col = "black", hcross.lty = "solid",
+                        hcross.signif.lwd = 7, hcross.nsd.lwd = 3.5){
+  if(!is.null(rangebox[1])){
+    # range box
+    graphics::lines(rep(rangebox[1,1],2), rangebox[,2],
+          lty = rbox.lty, lwd = rbox.lwd, col = rbox.col)
+    graphics::lines(rep(rangebox[2,1],2), rangebox[,2],
+          lty = rbox.lty, lwd = rbox.lwd, col = rbox.col)
+    graphics::lines(rangebox[,1], rep(rangebox[1,2],2),
+          lty = rbox.lty, lwd = rbox.lwd, col = rbox.col)
+    graphics::lines(rangebox[,1], rep(rangebox[2,2],2),
+          lty = rbox.lty, lwd = rbox.lwd, col = rbox.col)
+  }
+  if(!is.null(hcross[1])){
+    # box for h-cross
+    graphics::lines(rep(hcross[1,1],2), hcross[,2],
+          lty = hbox.lty, lwd = hbox.lwd, col = hbox.col)
+    graphics::lines(rep(hcross[2,1],2), hcross[,2],
+          lty = hbox.lty, lwd = hbox.lwd, col = hbox.col)
+    graphics::lines(hcross[,1], rep(hcross[1,2],2),
+          lty = hbox.lty, lwd = hbox.lwd, col = hbox.col)
+    graphics::lines(hcross[,1], rep(hcross[2,2],2),
+          lty = hbox.lty, lwd = hbox.lwd, col = hbox.col)
+  }
+  if(!is.null(rangebox[1]) & !is.null(hcross[1])){
+    # h-cross
+    centerpoint <- apply(rangebox, 2, mean)
+    graphics::lines(rep(centerpoint[1], 2), hcross[,2], lty = hcross.lty, col = hcross.col,
+          lwd = ifelse(max(rangebox[,1])-min(rangebox[,1])-
+                         max(hcross[,1])+min(hcross[,1]) > 0,
+                       hcross.signif.lwd, hcross.nsd.lwd))
+    graphics::lines(hcross[,1], rep(centerpoint[2], 2), lty = hcross.lty, col = hcross.col,
+          lwd = ifelse(max(rangebox[,2])-min(rangebox[,2])-
+                         max(hcross[,2])+min(hcross[,2]) > 0,
+                       hcross.signif.lwd, hcross.nsd.lwd))
+  }
+  invisible()
+}
+
 

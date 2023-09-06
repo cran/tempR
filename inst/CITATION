@@ -1,15 +1,1 @@
-citHeader("To cite the tempR package in publications use:")
-
-yyyy <- "2022"
-vers <- paste0("R package version ", meta$Version,
-              ". http://www.cran.r-project.org/package=tempR/")
-
-citEntry(entry = "misc",
-         title = "tempR: Temporal Sensory Data Analysis",
-         author = personList(as.person("J.C. Castura")),
-         year = yyyy,
-	       note = vers,
-         textVersion = paste("Castura, J.C. (", yyyy,
-         "). tempR: Temporal Sensory Data Analysis. ",
-		     vers, ".", sep="")
-)
+citation(auto = meta)
