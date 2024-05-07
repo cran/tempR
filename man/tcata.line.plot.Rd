@@ -43,55 +43,55 @@ save.format = "", save.as = "" )
 
 \item{declutter}{a matrix with the same dimensions as \code{X}; give the value \code{1} to show a proportion in \code{X} and \code{reference} (if given), otherwise give \code{0} or \code{NA}.}
 
-\item{reference}{a matrix with the same dimensions as \code{X}; give the value \code{1} if \code{reference} will be shown (allowing finer control than \code{declutter}), otherwise give \code{0} or \code{NA}.}
+\item{reference}{a matrix with the same dimensions as \code{X}; give the value \code{1} if \code{reference} will be shown (allowing finer control than \code{declutter}), otherwise give \code{0} or \code{NA}}
 
-\item{ref.col}{\code{reference} line colour.}
+\item{ref.col}{\code{reference} line colour}
 
-\item{ref.lty}{\code{reference} line type.}
+\item{ref.lty}{\code{reference} line type}
 
-\item{ref.lwd}{\code{reference} line width.}
+\item{ref.lwd}{\code{reference} line width}
 
 \item{highlight}{TRUE if differences will be highlighted; otherwise FALSE}
 
-\item{highlight.col}{a vector of colours for attributes corresponding to rows of \code{X}.}
+\item{highlight.col}{a vector of colours for attributes corresponding to rows of \code{X}}
 
-\item{highlight.lty}{line type associated with the highlighting.}
+\item{highlight.lty}{line type associated with the highlighting}
 
-\item{highlight.lwd}{line weight associated with the highlighting line.}
+\item{highlight.lwd}{line weight associated with the highlighting line}
 
-\item{xlab}{label for the x axis.}
+\item{xlab}{label for the x axis}
 
-\item{ylab}{label for the y axis.}
+\item{ylab}{label for the y axis}
 
-\item{axes.font}{font for axes labels; see \code{\link[graphics]{par}}.}
+\item{axes.font}{font for axes labels; see \code{\link[graphics]{par}}}
 
 \item{axes.cex}{size for axes labels.}
 
 \item{xlim}{x limits specified using a vector of 2 (ascending) numbers.}
 
-\item{las}{numeric in {0,1,2,3}; the style of the axis labels. See \code{\link[graphics]{par}}.}
+\item{las}{numeric in \code{0,1,2,3} indicating style of axis labels; see \code{\link[graphics]{par}}}
 
-\item{x.increment}{interval between times when labelling the x axis.}
+\item{x.increment}{interval between times when labelling the x axis}
 
 \item{box}{draw box around plot area; see: \code{\link[graphics]{box}}}
 
-\item{legend.cex}{size of markers shown in the legend.}
+\item{legend.cex}{size of markers shown in the legend}
 
-\item{legend.font}{font for the legend; see \code{\link[graphics]{text}}.}
+\item{legend.font}{font for the legend; see \code{\link[graphics]{text}}}
 
-\item{legend.pos}{location of plot legend; defaults to \code{"topleft"}.}
+\item{legend.pos}{location of plot legend; defaults to \code{"topleft"}}
 
-\item{legend.ncol}{number of columns in legend.}
+\item{legend.ncol}{number of columns in legend}
 
-\item{height}{window height.}
+\item{height}{window height}
 
-\item{width}{window width.}
+\item{width}{window width}
 
-\item{main}{plot title; see \code{\link[graphics]{plot}}.}
+\item{main}{plot title; see \code{\link[graphics]{plot}}}
 
-\item{save.format}{If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).}
+\item{save.format}{If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format)}
 
-\item{save.as}{Filename if the file will be saved.}
+\item{save.as}{Filename if the file will be saved}
 }
 \description{
 Plots TCATA curves based on count or proportion data. Can also be used for plotting Temporal Dominance of Sensations (TDS) curves based on dominance counts or proportions.

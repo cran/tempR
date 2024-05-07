@@ -6,20 +6,20 @@
 #' @usage tds.plot(X, attributes = NULL, times = NULL, chance = NULL, signif = NULL,
 #'  line.col = 1, lty = 1, lwd = 1, las = 0, xlab = "Time (seconds)",
 #'  ylab = "Dominance rate", main = "", height = 8, width = 12, box = FALSE, save.as = "")
-#' @param X matrix of dominance rates (Attributes in rows, Times in columns).
-#' @param attributes a vector of attribute labels, corresponding to the attributes in \code{X}.
-#' @param times a vector of times, corresponding to the times in \code{X}.
-#' @param chance proportion indicating the chance level, usually \code{1/length(attributes)} or \code{1/(1+length(attributes))}.
-#' @param signif significance level associated with the number of observations and \code{chance}.
+#' @param X matrix of dominance rates (Attributes in rows, Times in columns)
+#' @param attributes a vector of attribute labels, corresponding to the attributes in \code{X}
+#' @param times a vector of times, corresponding to the times in \code{X}
+#' @param chance proportion indicating the chance level, usually \code{1/length(attributes)} or \code{1/(1+length(attributes))}
+#' @param signif significance level associated with the number of observations and \code{chance}
 #' @param main plot title; see \code{\link[graphics]{plot}}
 #' @param xlab,ylab Labels for the x and y axes; see \code{\link[graphics]{plot}}
 #' @param line.col A vector of colors for lines corresponding to \code{attributes}; see \code{\link[graphics]{par}}
 #' @param lty,lwd line type and weight for attributes; see \code{\link[graphics]{par}}
-#' @param las numeric in {0,1,2,3}; the style of the axis labels. See: \code{\link[graphics]{par}}
-#' @param height Window height.
-#' @param width Window width.
+#' @param las numeric in \code{0,1,2,3} indicating style of axis labels; see \code{\link[graphics]{par}}
+#' @param height Window height
+#' @param width Window width
 #' @param box draw box around plot area; see: \code{\link[graphics]{box}}
-#' @param save.as Filename if the file will be saved.
+#' @param save.as Filename if the file will be saved
 #' @export
 #' @encoding UTF-8
 #' @references Pineau, N., Schlich, P., Cordelle, S., Mathonnière, C., Issanchou, S., Imbert, A., Rogeaux, M., Etiévant, P., & Köster, E. (2009). Temporal dominance of sensations: Construction of the TDS curves and comparison with time–intensity.  \emph{Food Quality and Preference}, 20, 450–455. \doi{10.1016/j.foodqual.2009.04.005}

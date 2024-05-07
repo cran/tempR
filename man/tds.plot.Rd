@@ -10,33 +10,33 @@ tds.plot(X, attributes = NULL, times = NULL, chance = NULL, signif = NULL,
  ylab = "Dominance rate", main = "", height = 8, width = 12, box = FALSE, save.as = "")
 }
 \arguments{
-\item{X}{matrix of dominance rates (Attributes in rows, Times in columns).}
+\item{X}{matrix of dominance rates (Attributes in rows, Times in columns)}
 
-\item{attributes}{a vector of attribute labels, corresponding to the attributes in \code{X}.}
+\item{attributes}{a vector of attribute labels, corresponding to the attributes in \code{X}}
 
-\item{times}{a vector of times, corresponding to the times in \code{X}.}
+\item{times}{a vector of times, corresponding to the times in \code{X}}
 
-\item{chance}{proportion indicating the chance level, usually \code{1/length(attributes)} or \code{1/(1+length(attributes))}.}
+\item{chance}{proportion indicating the chance level, usually \code{1/length(attributes)} or \code{1/(1+length(attributes))}}
 
-\item{signif}{significance level associated with the number of observations and \code{chance}.}
+\item{signif}{significance level associated with the number of observations and \code{chance}}
 
 \item{line.col}{A vector of colors for lines corresponding to \code{attributes}; see \code{\link[graphics]{par}}}
 
 \item{lty, lwd}{line type and weight for attributes; see \code{\link[graphics]{par}}}
 
-\item{las}{numeric in {0,1,2,3}; the style of the axis labels. See: \code{\link[graphics]{par}}}
+\item{las}{numeric in \code{0,1,2,3} indicating style of axis labels; see \code{\link[graphics]{par}}}
 
 \item{xlab, ylab}{Labels for the x and y axes; see \code{\link[graphics]{plot}}}
 
 \item{main}{plot title; see \code{\link[graphics]{plot}}}
 
-\item{height}{Window height.}
+\item{height}{Window height}
 
-\item{width}{Window width.}
+\item{width}{Window width}
 
 \item{box}{draw box around plot area; see: \code{\link[graphics]{box}}}
 
-\item{save.as}{Filename if the file will be saved.}
+\item{save.as}{Filename if the file will be saved}
 }
 \description{
 Plots TDS curves based on dominance rates, showing chance and significance lines.

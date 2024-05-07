@@ -359,31 +359,31 @@ citation.counts <- function(x, product.name = "",
 #' @param emphasis.lty either a line type (\code{lty}) for all emphasis lines .
 #' @param emphasis.lwd line weight associated with the emphasis line.
 #' @param declutter a matrix with the same dimensions as \code{X}; give the value \code{1} to show a proportion in \code{X} and \code{reference} (if given), otherwise give \code{0} or \code{NA}.
-#' @param reference a matrix with the same dimensions as \code{X}; give the value \code{1} if \code{reference} will be shown (allowing finer control than \code{declutter}), otherwise give \code{0} or \code{NA}.
-#' @param ref.col \code{reference} line colour.
-#' @param ref.lty \code{reference} line type.
-#' @param ref.lwd \code{reference} line width.
+#' @param reference a matrix with the same dimensions as \code{X}; give the value \code{1} if \code{reference} will be shown (allowing finer control than \code{declutter}), otherwise give \code{0} or \code{NA}
+#' @param ref.col \code{reference} line colour
+#' @param ref.lty \code{reference} line type
+#' @param ref.lwd \code{reference} line width
 #' @param highlight TRUE if differences will be highlighted; otherwise FALSE
-#' @param highlight.col a vector of colours for attributes corresponding to rows of \code{X}.
-#' @param highlight.lty line type associated with the highlighting.
-#' @param highlight.lwd line weight associated with the highlighting line.
-#' @param xlab label for the x axis.
-#' @param ylab label for the y axis.
-#' @param axes.font font for axes labels; see \code{\link[graphics]{par}}.
+#' @param highlight.col a vector of colours for attributes corresponding to rows of \code{X}
+#' @param highlight.lty line type associated with the highlighting
+#' @param highlight.lwd line weight associated with the highlighting line
+#' @param xlab label for the x axis
+#' @param ylab label for the y axis
+#' @param axes.font font for axes labels; see \code{\link[graphics]{par}}
 #' @param axes.cex size for axes labels.
 #' @param xlim x limits specified using a vector of 2 (ascending) numbers.
-#' @param las numeric in {0,1,2,3}; the style of the axis labels. See \code{\link[graphics]{par}}.
-#' @param x.increment interval between times when labelling the x axis.
+#' @param las numeric in \code{0,1,2,3} indicating style of axis labels; see \code{\link[graphics]{par}}
+#' @param x.increment interval between times when labelling the x axis
 #' @param box draw box around plot area; see: \code{\link[graphics]{box}}
-#' @param legend.cex size of markers shown in the legend.
-#' @param legend.font font for the legend; see \code{\link[graphics]{text}}.
-#' @param legend.pos location of plot legend; defaults to \code{"topleft"}.
-#' @param legend.ncol number of columns in legend.
-#' @param main plot title; see \code{\link[graphics]{plot}}.
-#' @param height window height.
-#' @param width window width.
-#' @param save.format If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format).
-#' @param save.as Filename if the file will be saved.
+#' @param legend.cex size of markers shown in the legend
+#' @param legend.font font for the legend; see \code{\link[graphics]{text}}
+#' @param legend.pos location of plot legend; defaults to \code{"topleft"}
+#' @param legend.ncol number of columns in legend
+#' @param main plot title; see \code{\link[graphics]{plot}}
+#' @param height window height
+#' @param width window width
+#' @param save.format If indicated, this will be the fle type for the save image. Defaults to \code{"eps"} (eps format). Other possible values are \code{""} (not saved) or \code{"png"} (png format)
+#' @param save.as Filename if the file will be saved
 #' @export
 #' @encoding UTF-8
 #' @references Castura, J.C., Antúnez, L., Giménez, A., Ares, G. (2016). Temporal check-all-that-apply (TCATA): A novel temporal sensory method for characterizing products. \emph{Food Quality and Preference}, 47, 79-90. \doi{10.1016/j.foodqual.2015.06.017}
@@ -979,11 +979,11 @@ make.palettes <- function(n){
 #' @examples
 #' # example using 'syrah' data set
 #' syrah.pca <- prcomp(syrah[1:248, -c(1:4)], scale. = FALSE)
-#' plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
+#' plot_pca.trajectories(syrah.pca, products.times = syrah[1:124, c(1, 4)],
 #'                       attributes = colnames(syrah)[-c(1:4)], type = "raw")
 #'
 #' # now with smoothing; may need to play with the span parameter to get appropriate smoothing
-#' plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
+#' plot_pca.trajectories(syrah.pca, products.times = syrah[1:124, c(1, 4)],
 #'                       attributes = colnames(syrah)[-c(1:4)], type = "smooth", span = 0.3)
 #'
 #' # plots at each time point (trajectories join 2 points so start at timepoint 2, i.e., 11 s)

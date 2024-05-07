@@ -91,11 +91,11 @@ Plot trajectories following PCA on multiblock TCATA proportions, or same for Tem
 \examples{
 # example using 'syrah' data set
 syrah.pca <- prcomp(syrah[1:248, -c(1:4)], scale. = FALSE)
-plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
+plot_pca.trajectories(syrah.pca, products.times = syrah[1:124, c(1, 4)],
                       attributes = colnames(syrah)[-c(1:4)], type = "raw")
 
 # now with smoothing; may need to play with the span parameter to get appropriate smoothing
-plot_pca.trajectories(syrah.pca, products.times = syrah[1:248, c(1, 4)],
+plot_pca.trajectories(syrah.pca, products.times = syrah[1:124, c(1, 4)],
                       attributes = colnames(syrah)[-c(1:4)], type = "smooth", span = 0.3)
 
 # plots at each time point (trajectories join 2 points so start at timepoint 2, i.e., 11 s)
